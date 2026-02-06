@@ -1,0 +1,31 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    name: Build Project
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        config: [x64-debug, x64-release]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install CMake
+      uses: lukka/get-cmake@latest
+
+    - name: Install LLVM
+      run: |
+        choco install llvm -y
+        refreshenv
+
+    - name: Build Project
+      run: |
+        cmake --preset ${{matrix.preset}}
+        cmaek --build --preset ${{matrix.preset}}
