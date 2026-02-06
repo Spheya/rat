@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        config: [x64-debug, x64-release]
+        preset: [x64-debug, x64-release]
 
     steps:
     - uses: actions/checkout@v4
@@ -28,4 +28,4 @@ jobs:
     - name: Build Project
       run: |
         cmake --preset ${{matrix.preset}}
-        cmaek --build --preset ${{matrix.preset}}
+        cmake --build --preset ${{matrix.preset}}
