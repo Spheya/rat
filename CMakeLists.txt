@@ -26,10 +26,19 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/glfw/glfw
     GIT_TAG 3.4
 )
-FetchContent_MakeAvailable(glfw)
+
+FetchContent_Declare(
+    glm
+    GIT_REPOSITORY https://github.com/g-truc/glm
+    GIT_TAG 1.0.3
+)
+FetchContent_MakeAvailable(glfw glm)
 
 add_subdirectory(external/glad)
-target_link_libraries(rat PRIVATE glad glfw)
+target_link_libraries(rat
+    PUBLIC glm
+    PRIVATE glad glfw
+)
 
 if(MSVC)
   target_compile_options(rat PRIVATE /W4 /WX)
