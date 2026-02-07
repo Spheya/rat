@@ -51,4 +51,8 @@ namespace rat::glfw {
 		glfwSetWindowTitle(m_window, title);
 	}
 
+	void Window::swapBuffers() {
+		glfwSwapBuffers(m_window);
+	}
+
 } // namespace rat::glfw

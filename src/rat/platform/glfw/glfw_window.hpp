@@ -20,6 +20,8 @@ namespace rat::glfw {
 		virtual const char* getTitle() const override;
 		virtual void setTitle(const char* title) override;
 
+		virtual void swapBuffers() override;
+
 	private:
 		GLFWwindow* m_window;
 	};

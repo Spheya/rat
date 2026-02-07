@@ -4,8 +4,11 @@
 int main() {
 	rat::intialize();
 	{
-		std::unique_ptr<rat::Surface> surface = rat::createSurface(); // NOLINT
-		while(true) { rat::pollEvents(); }
+		std::unique_ptr<rat::Surface> surface = rat::createSurface();
+		while(true) {
+			rat::pollEvents();
+			surface->swapBuffers();
+		}
 	}
 	rat::terminate();
 	return 0;
