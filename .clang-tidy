@@ -4,6 +4,7 @@ Checks: >
   clang-analyzer-*,
   modernize-*,
   -modernize-use-trailing-return-type,
+  -modernize-return-braced-init-list,
   cppcoreguidelines-avoid-capturing-lambda-coroutines,
   cppcoreguidelines-avoid-const-or-ref-data-members,
   cppcoreguidelines-avoid-goto,

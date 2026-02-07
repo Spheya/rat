@@ -1,6 +1,12 @@
-#include <rat/engine.hpp>
+#include <rat/core.hpp>
+#include <rat/surface.hpp>
 
 int main() {
-	rat::Engine engine;
+	rat::intialize();
+	{
+		std::unique_ptr<rat::Surface> surface = rat::createSurface(); // NOLINT
+		while(true) { rat::pollEvents(); }
+	}
+	rat::terminate();
 	return 0;
 }
