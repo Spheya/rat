@@ -1,6 +1,6 @@
-#include <rat.hpp>
+#include <rat/engine.hpp>
 
 int main() {
-	rat::rat();
+	rat::Engine engine;
 	return 0;
 }

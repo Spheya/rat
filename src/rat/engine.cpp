@@ -1,8 +1,10 @@
-﻿#include "rat.hpp"
+#include "rat/engine.hpp"
+
+#include <iostream>
 
 namespace rat {
 
-	void rat() {
+	Engine::Engine() {
 		std::cout << "rat :D" << std::endl;
 	}
 
