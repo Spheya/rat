@@ -1,52 +1,52 @@
 ﻿{
-  "version": 3,
-  "configurePresets": [
-    {
-      "name": "windows-base",
-      "hidden": true,
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/out/build/${presetName}",
-      "installDir": "${sourceDir}/out/install/${presetName}",
-      "architecture": {
-        "value": "x64",
-        "strategy": "external"
-      },
-      "cacheVariables": {
-        "CMAKE_C_COMPILER": "clang",
-        "CMAKE_CXX_COMPILER": "clang++"
-      },
-      "condition": {
-        "type": "equals",
-        "lhs": "${hostSystemName}",
-        "rhs": "Windows"
-      }
-    },
-    {
-      "name": "x64-debug",
-      "displayName": "x64 Debug",
-      "inherits": "windows-base",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
-      }
-    },
-    {
-      "name": "x64-release",
-      "displayName": "x64 Release",
-      "inherits": "windows-base",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
-      }
-    }
-  ],
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "windows-base",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "installDir": "${sourceDir}/out/install/${presetName}",
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "clang-cl",
+                "CMAKE_CXX_COMPILER": "clang-cl"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "x64-debug",
+            "displayName": "x64 Debug",
+            "inherits": "windows-base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "x64-release",
+            "displayName": "x64 Release",
+            "inherits": "windows-base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        }
+    ],
 
-  "buildPresets": [
-    {
-      "name": "x64-debug",
-      "configurePreset": "x64-debug"
-    },
-    {
-      "name": "x64-release",
-      "configurePreset": "x64-release"
-    }
-  ]
+    "buildPresets": [
+        {
+            "name": "x64-debug",
+            "configurePreset": "x64-debug"
+        },
+        {
+            "name": "x64-release",
+            "configurePreset": "x64-release"
+        }
+    ]
 }
