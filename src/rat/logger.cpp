@@ -36,7 +36,11 @@ namespace rat {
 
 			if(len < 96) { msg.resize(80 + (msg.length() - len), ' '); }
 
-			std::cout << msg << "\033[1;30m (" << fileName << ":" << location.line() << ")\033[0m" << std::endl;
+			if(level == LogLevel::Error) {
+				std::cerr << msg << "\033[1;30m (" << fileName << ":" << location.line() << ")\033[0m" << std::endl;
+			} else {
+				std::cout << msg << "\033[1;30m (" << fileName << ":" << location.line() << ")\033[0m" << std::endl;
+			}
 		}
 	}
 
