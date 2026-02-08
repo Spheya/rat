@@ -34,7 +34,7 @@ namespace rat {
 				break;
 			}
 
-			if(len < 64) { msg.resize(64 + (msg.length() - len), ' '); }
+			if(len < 96) { msg.resize(80 + (msg.length() - len), ' '); }
 
 			std::cout << msg << "\033[1;30m (" << fileName << ":" << location.line() << ")\033[0m" << std::endl;
 		}

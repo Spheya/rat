@@ -2,7 +2,7 @@
 
 namespace rat {
 
-	void intialize();
+	bool intialize();
 	void terminate();
 	void pollEvents();
 

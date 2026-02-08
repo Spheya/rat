@@ -22,6 +22,8 @@ namespace rat::glfw {
 
 		virtual void swapBuffers() override;
 
+		bool isValid() const { return m_window; }
+
 	private:
 		GLFWwindow* m_window;
 	};
