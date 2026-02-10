@@ -13,7 +13,6 @@ namespace rat::glfw {
 		Window& operator=(Window&& other) noexcept;
 		virtual ~Window();
 
-
 		virtual glm::uvec2 getSize() const override;
 		virtual glm::ivec2 getPosition() const override;
 

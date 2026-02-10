@@ -33,7 +33,7 @@ namespace rat::opengl {
 		glfwGetVersion(&major, &minor, &rev);
 		rat::info("GLFW version: {}.{}.{}", major, minor, rev);
 		rat::info("OpenGL version: {}", (const char*)glGetString(GL_VERSION)); // NOLINT
-		rat::info("OpenGL vendor: {}", (const char*)glGetString(GL_VENDOR)); // NOLINT
+		rat::info("OpenGL vendor: {}", (const char*)glGetString(GL_VENDOR));   // NOLINT
 		rat::info("OpenGL device: {}", (const char*)glGetString(GL_RENDERER)); // NOLINT
 #endif
 
@@ -62,4 +62,4 @@ namespace rat::opengl {
 		glfwSwapBuffers(m_glContext);
 	}
 
-} // namespace rat::opengl3
+} // namespace rat::opengl

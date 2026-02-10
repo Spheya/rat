@@ -18,4 +18,4 @@ namespace rat {
 		rat::info("");
 	}
 
-}
+} // namespace rat

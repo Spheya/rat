@@ -1,7 +1,5 @@
 #pragma once
 
-#include <memory>
-
 #include "rat/math.hpp"
 
 namespace rat {

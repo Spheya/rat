@@ -1,5 +1,4 @@
 #include "graphics_context.hpp"
-#include "rat/logger.hpp"
 #include "rat/platform/opengl/opengl_graphics_context.hpp"
 
 namespace rat {

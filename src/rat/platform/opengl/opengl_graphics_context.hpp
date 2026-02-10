@@ -1,9 +1,9 @@
 #pragma once
 
+#include <memory>
+
 #include "rat/platform/glfw/glfw_window.hpp"
 #include "rat/rendering/graphics_context.hpp"
-
-#include <memory>
 
 namespace rat::opengl {
 
@@ -14,7 +14,7 @@ namespace rat::opengl {
 
 		virtual bool isValid() const override;
 		virtual bool isCloseRequested() const override;
-		
+
 		virtual void beginFrame() override;
 		virtual void endFrame() override;
 
@@ -23,4 +23,4 @@ namespace rat::opengl {
 		std::unique_ptr<glfw::Window> m_window;
 	};
 
-} // namespace rat::opengl3
+} // namespace rat::opengl

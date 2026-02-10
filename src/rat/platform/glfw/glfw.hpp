@@ -3,8 +3,8 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
-#include "rat/logger.hpp"
 #include "rat/application_info.hpp"
+#include "rat/logger.hpp"
 
 namespace rat::glfw {
 

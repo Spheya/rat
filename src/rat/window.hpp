@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #include "rendering/render_target.hpp"
 
 namespace rat {
