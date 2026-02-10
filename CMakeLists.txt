@@ -8,7 +8,7 @@ include(FetchContent)
 add_library(rat)
 add_library(rat::rat ALIAS rat)
 
-target_sources(rat PRIVATE "src/rat/platform/glfw/glfw_window.cpp" "src/rat/surface.cpp" "src/rat/core.cpp" "src/rat/logger.cpp")
+target_sources(rat PRIVATE "src/rat/platform/glfw/glfw_window.cpp" "src/rat/logger.cpp" "src/rat/rat.cpp" "src/rat/rendering/graphics_context.cpp" "src/rat/platform/opengl/opengl_graphics_context.cpp")
 
 target_include_directories(rat PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/src

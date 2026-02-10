@@ -3,14 +3,7 @@
 
 namespace rat::glfw {
 
-	Window::Window(unsigned width, unsigned height, const char* title) : Window(glm::uvec2(width, height), title) {}
-
-	Window::Window(glm::uvec2 size, const char* title) {
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		m_window = glfwCreateWindow(size.x, size.y, title, nullptr, nullptr); // NOLINT
-	}
+	Window::Window(GLFWwindow* window) : m_window(window) {}
 
 	Window::Window(Window&& other) noexcept : m_window(other.m_window) {
 		other.m_window = nullptr;
@@ -49,8 +42,8 @@ namespace rat::glfw {
 		glfwSetWindowTitle(m_window, title);
 	}
 
-	void Window::swapBuffers() {
-		glfwSwapBuffers(m_window);
+	bool Window::isCloseRequested() const {
+		return glfwWindowShouldClose(m_window);
 	}
 
 } // namespace rat::glfw

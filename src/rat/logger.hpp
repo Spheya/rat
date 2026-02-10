@@ -75,6 +75,7 @@ namespace rat {
 	}
 
 #else
+
 	template<typename... Args>
 	inline void log([[maybe_unused]] LogMessage<Args...> message, [[maybe_unused]] Args&&... args) {}
 
@@ -102,6 +103,7 @@ namespace rat {
 	template<typename T>
 	    requires(!std::convertible_to<const T&, std::basic_string_view<char>>)
 	inline void error([[maybe_unused]] const T& value, [[maybe_unused]] std::source_location location = std::source_location::current()) {}
+
 #endif
 
 } // namespace rat
