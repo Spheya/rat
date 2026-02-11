@@ -29,6 +29,8 @@ namespace rat::glfw {
 		}
 	}
 
+#ifndef RAT_STRIP_LOGGER
+
 	inline void errorHandler(int errCode, const char* description) {
 		rat::error("{}({}): {}", getErrString(errCode), errCode, description);
 	}
@@ -40,6 +42,13 @@ namespace rat::glfw {
 			glfwSetErrorCallback(errorHandler);
 		}
 	}
+
+#else
+
+	inline void errorHandler([[maybe_unused]] int errCode, [[maybe_unused]] const char* description) {}
+	inline void setupErrorHandler() {}
+
+#endif
 
 	inline GLFWwindow* createWindow(const ApplicationInfo& info) {
 		return glfwCreateWindow(info.requestedResolution.x, info.requestedResolution.y, info.name, nullptr, nullptr);

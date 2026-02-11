@@ -2,12 +2,14 @@
 
 #include <glad/glad.h>
 
+#include "opengl_mesh.hpp"
 #include "rat/logger.hpp"
 #include "rat/platform/glfw/glfw.hpp"
 
-namespace rat::opengl {
+namespace rat {
 
-	GraphicsContext::GraphicsContext(const ApplicationInfo& appInfo) : rat::GraphicsContext(GraphicsBackend::OpenGL3), m_glContext(nullptr) {
+	OpenGLGraphicsContext::OpenGLGraphicsContext(const ApplicationInfo& appInfo) :
+	    BaseGraphicsContext(GraphicsBackend::OpenGL3), m_glContext(nullptr) {
 		glfw::setupErrorHandler();
 		if(glfwInit() == GLFW_FALSE) {
 			rat::error("Could not initialize GLFW");
@@ -41,25 +43,47 @@ namespace rat::opengl {
 		renderTarget = m_window.get();
 	}
 
-	GraphicsContext::~GraphicsContext() {
+	OpenGLGraphicsContext::~OpenGLGraphicsContext() {
 		m_window.reset();
 		glfwTerminate();
 	}
 
-	bool GraphicsContext::isValid() const {
+	bool OpenGLGraphicsContext::isValid() const {
 		return m_window != nullptr;
 	}
 
-	bool GraphicsContext::isCloseRequested() const {
+	bool OpenGLGraphicsContext::isCloseRequested() const {
 		return m_window->isCloseRequested();
 	}
 
-	void GraphicsContext::beginFrame() {
+	void OpenGLGraphicsContext::beginFrame() {
 		glfwPollEvents();
 	}
 
-	void GraphicsContext::endFrame() {
+	void OpenGLGraphicsContext::endFrame() {
 		glfwSwapBuffers(m_glContext);
 	}
 
-} // namespace rat::opengl
+	Mesh* OpenGLGraphicsContext::createMesh(std::span<const Vertex> vertices, std::span<const unsigned> indices) {
+		auto* mesh = new OpenGLMesh();
+
+		mesh->setVertices(vertices);
+		mesh->setIndices(indices);
+
+		return mesh;
+	}
+
+	void OpenGLGraphicsContext::destroyMesh(Mesh* mesh) {
+		delete static_cast<OpenGLMesh*>(mesh);
+	}
+
+	void OpenGLGraphicsContext::render(const Drawable* drawables, unsigned drawableCount) {
+		for(unsigned i = 0; i < drawableCount; ++i) {
+			const auto* mesh = static_cast<const OpenGLMesh*>(drawables->mesh);
+			glBindVertexArray(mesh->m_vertexBuffer);
+			glDrawElements(GL_TRIANGLES, mesh->numIndices, GL_UNSIGNED_INT, nullptr);
+		}
+		glBindVertexArray(0);
+	}
+
+} // namespace rat

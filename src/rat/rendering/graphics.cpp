@@ -1,10 +1,10 @@
-#include "graphics_context.hpp"
+#include "graphics.hpp"
 #include "rat/platform/opengl/opengl_graphics_context.hpp"
 
 namespace rat {
 
 	GraphicsContext* createGraphicsContext(const ApplicationInfo& appInfo, GraphicsBackend) {
-		return new opengl::GraphicsContext(appInfo);
+		return new OpenGLGraphicsContext(appInfo);
 	}
 
 	void closeGraphicsContext(GraphicsContext* context) {
