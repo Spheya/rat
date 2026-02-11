@@ -35,6 +35,6 @@ namespace rat {
 		GraphicsBackend m_graphicsBackend;
 	};
 
-	using GraphicsContext = BasicGraphicsContext;
+	using GraphicsContext = BaseGraphicsContext;
 
 } // namespace rat
