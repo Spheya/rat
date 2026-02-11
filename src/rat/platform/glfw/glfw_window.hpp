@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rat/window.hpp"
+#include "rat/core/window.hpp"
 
 struct GLFWwindow;
 

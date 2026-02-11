@@ -1,6 +1,7 @@
 #include <vector>
 
-#include <rat/rat.hpp>
+#include <rat/core/logger.hpp>
+#include <rat/core/rat.hpp>
 #include <rat/rendering/drawable.hpp>
 #include <rat/rendering/graphics.hpp>
 
@@ -24,6 +25,8 @@ int main() {
 
 	rat::Mesh* quad = context->createMesh(vertices, indices);
 	rat::Drawable drawable = { quad };
+
+	rat::info("test");
 
 	while(!context->isCloseRequested()) {
 		context->beginFrame();

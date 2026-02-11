@@ -1,7 +1,7 @@
 #pragma once
 
 #include "interface/graphics_context.hpp"
-#include "rat/application_info.hpp"
+#include "rat/core/application_info.hpp"
 
 namespace rat {
 

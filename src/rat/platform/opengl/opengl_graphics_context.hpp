@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "rat/application_info.hpp"
+#include "rat/core/application_info.hpp"
 #include "rat/platform/glfw/glfw_window.hpp"
 #include "rat/rendering/interface/graphics_context.hpp"
 

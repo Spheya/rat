@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rendering/render_target.hpp"
+#include "rat/rendering/render_target.hpp"
 
 namespace rat {
 

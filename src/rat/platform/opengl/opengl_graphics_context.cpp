@@ -3,7 +3,7 @@
 #include <glad/glad.h>
 
 #include "opengl_mesh.hpp"
-#include "rat/logger.hpp"
+#include "rat/core/logger.hpp"
 #include "rat/platform/glfw/glfw.hpp"
 
 namespace rat {

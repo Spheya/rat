@@ -8,14 +8,29 @@ include(FetchContent)
 add_library(rat)
 add_library(rat::rat ALIAS rat)
 
+file(GLOB_RECURSE CORE_HEADERS ./src/rat/core/*.hpp)
+file(GLOB_RECURSE CORE_SOURCES ./src/rat/core/*.cpp)
+file(GLOB_RECURSE RENDERING_HEADERS ./src/rat/rendering/*.hpp)
+file(GLOB_RECURSE RENDERING_SOURCES ./src/rat/rendering/*.cpp)
+file(GLOB_RECURSE PLATFORM_GLFW_HEADERS ./src/rat/platform/glfw/*.hpp)
+file(GLOB_RECURSE PLATFORM_GLFW_SOURCES ./src/rat/platform/glfw/*.cpp)
+file(GLOB_RECURSE PLATFORM_OPENGL_HEADERS ./src/rat/platform/opengl/*.hpp)
+file(GLOB_RECURSE PLATFORM_OPENGL_SOURCES ./src/rat/platform/opengl/*.cpp)
+
+source_group("Header Files/Core" FILES ${CORE_HEADERS})
+source_group("Source Files/Core" FILES ${CORE_SOURCES})
+source_group("Header Files/Rendering" FILES ${RENDERING_HEADERS})
+source_group("Source Files/Rendering" FILES ${RENDERING_SOURCES})
+source_group("Header Files/Platform/GLFW" FILES ${PLATFORM_GLFW_HEADERS})
+source_group("Source Files/Platform/GLFW" FILES ${PLATFORM_GLFW_SOURCES})
+source_group("Header Files/Platform/OpenGL" FILES ${PLATFORM_OPENGL_HEADERS})
+source_group("Source Files/Platform/OpenGL" FILES ${PLATFORM_OPENGL_SOURCES})
+
 target_sources(rat PRIVATE 
-    "src/rat/platform/glfw/glfw_window.cpp"
-    "src/rat/platform/opengl/opengl_graphics_context.cpp"
-    "src/rat/platform/opengl/opengl_mesh.cpp"
-    "src/rat/platform/opengl/opengl_shader.cpp"
-    "src/rat/rendering/graphics.cpp"
-    "src/rat/logger.cpp"
-    "src/rat/rat.cpp"
+    ${CORE_HEADERS} ${CORE_SOURCES}
+    ${RENDERING_HEADERS} ${RENDERING_SOURCES}
+    ${PLATFORM_GLFW_HEADERS} ${PLATFORM_GLFW_SOURCES}
+    ${PLATFORM_OPENGL_HEADERS} ${PLATFORM_OPENGL_SOURCES}
 )
 
 target_include_directories(rat PUBLIC

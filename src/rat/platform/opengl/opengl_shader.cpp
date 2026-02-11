@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "rat/logger.hpp"
+#include "rat/core/logger.hpp"
 
 namespace rat {
 
