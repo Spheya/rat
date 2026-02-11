@@ -37,7 +37,7 @@ namespace rat {
 		if(vertices.size() == numVertices) {
 			glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Vertex), vertices.data());
 		} else {
-			numVertices = vertices.size();
+			numVertices = unsigned(vertices.size());
 			glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
 		}
 	}
@@ -47,7 +47,7 @@ namespace rat {
 		if(indices.size() == numIndices) {
 			glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, indices.size() * sizeof(unsigned), indices.data());
 		} else {
-			numIndices = indices.size();
+			numIndices = unsigned(indices.size());
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned), indices.data(), GL_STATIC_DRAW);
 		}
 	}
