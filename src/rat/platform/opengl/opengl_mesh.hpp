@@ -13,7 +13,7 @@ namespace rat {
 		virtual void setIndices(std::span<const unsigned> indices) override;
 
 	protected:
-		OpenGLMesh();
+		OpenGLMesh(GLuint instanceBuffer);
 		~OpenGLMesh();
 
 	private:

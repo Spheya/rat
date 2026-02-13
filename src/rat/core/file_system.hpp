@@ -7,7 +7,7 @@ namespace rat {
 
 	class FileSystem {
 	public:
-		enum class Directory { Root, Assets };
+		enum class Directory { Root, Assets, Engine };
 
 		std::vector<char> loadFile(Directory directory, const char* path);
 		std::string loadTextFile(Directory directory, const char* path);

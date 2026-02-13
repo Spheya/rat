@@ -1,9 +1,13 @@
 #pragma once
 
+#include <span>
+
 #include "mesh.hpp"
+#include "pipeline.hpp"
 #include "rat/rendering/drawable.hpp"
 #include "rat/rendering/render_target.hpp"
 #include "rat/rendering/vertex.hpp"
+#include "shader.hpp"
 
 namespace rat {
 
@@ -23,7 +27,15 @@ namespace rat {
 		virtual Mesh* createMesh(std::span<const Vertex> vertices, std::span<const unsigned> indices) = 0;
 		virtual void destroyMesh(Mesh* mesh) = 0;
 
-		virtual void render(const Drawable* drawables, unsigned drawableCount) = 0;
+		virtual Shader* createShader(const char* vertex, const char* fragment) = 0;
+		virtual void destroyShader(Shader* shader) = 0;
+
+		virtual Pipeline* createPipeline(
+		    const Shader* shader, CullMode cullMode = CullMode::On, DepthTestMode depthTestMode = DepthTestMode::On, bool depthWriteEnabled = true
+		) = 0;
+		virtual void destroyPipeline(Pipeline* pipeline) = 0;
+
+		virtual void render(std::span<const Drawable> drawables) = 0;
 
 		GraphicsBackend getGraphicsBackend() const { return m_graphicsBackend; }
 		RenderTarget& getMainRenderTarget() const { return *renderTarget; }

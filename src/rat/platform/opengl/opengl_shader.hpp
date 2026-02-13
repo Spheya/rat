@@ -7,7 +7,7 @@
 namespace rat {
 
 	class OpenGLShader final : public BaseShader {
-		friend class OpenGLContext;
+		friend class OpenGLGraphicsContext;
 
 	protected:
 		OpenGLShader(const char* vertexShader, const char* fragmentShader);

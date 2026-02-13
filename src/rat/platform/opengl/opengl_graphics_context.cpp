@@ -1,15 +1,19 @@
 #include "opengl_graphics_context.hpp"
 
+#include <span>
+
 #include <glad/glad.h>
 
 #include "opengl_mesh.hpp"
+#include "opengl_pipeline.hpp"
+#include "opengl_shader.hpp"
 #include "rat/core/logger.hpp"
 #include "rat/platform/glfw/glfw.hpp"
 
 namespace rat {
 
 	OpenGLGraphicsContext::OpenGLGraphicsContext(const ApplicationInfo& appInfo) :
-	    BaseGraphicsContext(GraphicsBackend::OpenGL3), m_glContext(nullptr) {
+	    BaseGraphicsContext(GraphicsBackend::OpenGL3), m_glContext(nullptr), m_instanceBuffer(0) {
 		glfw::setupErrorHandler();
 		if(glfwInit() == GLFW_FALSE) {
 			rat::error("Could not initialize GLFW");
@@ -41,9 +45,12 @@ namespace rat {
 
 		m_window = std::make_unique<glfw::Window>(m_glContext);
 		renderTarget = m_window.get();
+
+		glGenBuffers(1, &m_instanceBuffer);
 	}
 
 	OpenGLGraphicsContext::~OpenGLGraphicsContext() {
+		glDeleteBuffers(1, &m_instanceBuffer);
 		m_window.reset();
 		glfwTerminate();
 	}
@@ -65,7 +72,7 @@ namespace rat {
 	}
 
 	Mesh* OpenGLGraphicsContext::createMesh(std::span<const Vertex> vertices, std::span<const unsigned> indices) {
-		auto* mesh = new OpenGLMesh();
+		auto* mesh = new OpenGLMesh(m_instanceBuffer);
 
 		mesh->setVertices(vertices);
 		mesh->setIndices(indices);
@@ -77,13 +84,84 @@ namespace rat {
 		delete static_cast<OpenGLMesh*>(mesh);
 	}
 
-	void OpenGLGraphicsContext::render(const Drawable* drawables, unsigned drawableCount) {
-		for(unsigned i = 0; i < drawableCount; ++i) {
-			const auto* mesh = static_cast<const OpenGLMesh*>(drawables->mesh);
-			glBindVertexArray(mesh->m_vertexBuffer);
-			glDrawElements(GL_TRIANGLES, mesh->numIndices, GL_UNSIGNED_INT, nullptr);
+	Shader* OpenGLGraphicsContext::createShader(const char* vertex, const char* fragment) {
+		return new OpenGLShader(vertex, fragment);
+	}
+
+	void OpenGLGraphicsContext::destroyShader(Shader* shader) {
+		delete static_cast<OpenGLShader*>(shader);
+	}
+
+	Pipeline* OpenGLGraphicsContext::createPipeline(const Shader* shader, CullMode cullMode, DepthTestMode depthTestMode, bool depthWriteEnabled) {
+		return new OpenGLPipeline(shader, cullMode, depthTestMode, depthWriteEnabled);
+	}
+
+	void OpenGLGraphicsContext::destroyPipeline(Pipeline* pipeline) {
+		delete static_cast<OpenGLPipeline*>(pipeline);
+	}
+
+	void OpenGLGraphicsContext::render(std::span<const Drawable> drawables) {
+		renderDrawables(drawables);
+	}
+
+	void OpenGLGraphicsContext::renderDrawables(std::span<const Drawable> drawables) {
+		if(drawables.empty()) return;
+
+		std::vector<glm::mat4> instanceBuffer(drawables.size());
+		for(size_t i = 0; i < drawables.size(); ++i) instanceBuffer[i] = drawables[i].matrix;
+
+		glBindBuffer(GL_ARRAY_BUFFER, m_instanceBuffer);
+		glBufferData(GL_ARRAY_BUFFER, instanceBuffer.size() * sizeof(glm::mat4), instanceBuffer.data(), GL_STREAM_DRAW);
+
+		const auto* boundPipeline = static_cast<const OpenGLPipeline*>(drawables.front().material->pipeline);
+		const auto* boundMesh = static_cast<const OpenGLMesh*>(drawables.front().mesh);
+
+		glBindVertexArray(boundMesh->m_vao);
+		bindPipeline(boundPipeline);
+
+		size_t batchStart = 0;
+		for(size_t i = 1; i < drawables.size(); ++i) {
+			const auto* newPipeline = static_cast<const OpenGLPipeline*>(drawables[i].material->pipeline);
+			const auto* newMesh = static_cast<const OpenGLMesh*>(drawables[i].mesh);
+
+			if(newPipeline != boundPipeline || newMesh != boundMesh) {
+				glDrawElementsInstanced(GL_TRIANGLES, boundMesh->indexCount(), GL_UNSIGNED_INT, nullptr, i - batchStart);
+				batchStart = i;
+
+				if(newPipeline != boundPipeline) {
+					boundPipeline = newPipeline;
+					bindPipeline(boundPipeline);
+				}
+
+				if(newMesh != boundMesh) {
+					boundMesh = newMesh;
+					glBindVertexArray(boundMesh->m_vao);
+				}
+			}
 		}
+		glDrawElementsInstanced(GL_TRIANGLES, boundMesh->indexCount(), GL_UNSIGNED_INT, nullptr, GLsizei(drawables.size() - batchStart));
+
 		glBindVertexArray(0);
+	}
+
+	void OpenGLGraphicsContext::bindPipeline(const Pipeline* pipeline) {
+		const auto* oglPipeline = static_cast<const OpenGLPipeline*>(pipeline);
+		if(oglPipeline->m_enableCull) {
+			glEnable(GL_CULL_FACE);
+			glCullFace(oglPipeline->m_cullFace);
+		} else {
+			glDisable(GL_CULL_FACE);
+		}
+
+		if(oglPipeline->m_enableDepthTest) {
+			glEnable(GL_DEPTH_TEST);
+			glDepthFunc(oglPipeline->m_depthFunc);
+		} else {
+			glDisable(GL_DEPTH_TEST);
+		}
+
+		glDepthMask(oglPipeline->m_depthWrite);
+		glUseProgram(static_cast<const OpenGLShader*>(pipeline->getShader())->m_program);
 	}
 
 } // namespace rat

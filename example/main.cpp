@@ -1,11 +1,17 @@
+#include <span>
+#include <string>
 #include <vector>
 
+#include <rat/core/file_system.hpp>
+#include <rat/core/logger.hpp>
 #include <rat/core/rat.hpp>
 #include <rat/rendering/drawable.hpp>
 #include <rat/rendering/graphics.hpp>
 
 int main() {
 	rat::printRat();
+
+	rat::FileSystem fileSystem;
 
 	rat::ApplicationInfo appInfo = {};
 	appInfo.name = "Rat";
@@ -22,17 +28,25 @@ int main() {
 	};
 	const std::vector<unsigned> indices = { 0, 1, 2, 0, 2, 3 };
 
+	std::string vertexShader = fileSystem.loadTextFile(rat::FileSystem::Directory::Assets, "shader.vs");
+	std::string fragmentShader = fileSystem.loadTextFile(rat::FileSystem::Directory::Assets, "shader.fs");
+	rat::Shader* shader = context->createShader(vertexShader.c_str(), fragmentShader.c_str());
+	rat::Pipeline* pipeline = context->createPipeline(shader);
+
 	rat::Mesh* quad = context->createMesh(vertices, indices);
-	rat::Drawable drawable = { quad };
+	rat::Material material = { .pipeline = pipeline };
+	rat::Drawable drawable = { .mesh = quad, .material = &material, .matrix = glm::mat4(1.0f) };
 
 	while(!context->isCloseRequested()) {
 		context->beginFrame();
 
-		context->render(&drawable, 1);
+		context->render(std::span(&drawable, 1));
 
 		context->endFrame();
 	}
 
 	context->destroyMesh(quad);
+	context->destroyPipeline(pipeline);
+	context->destroyShader(shader);
 	rat::closeGraphicsContext(context);
 }
