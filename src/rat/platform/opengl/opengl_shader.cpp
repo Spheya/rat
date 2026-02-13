@@ -59,6 +59,7 @@ namespace rat {
 
 		glDeleteShader(vsh);
 		glDeleteShader(fsh);
+		glUniformBlockBinding(m_program, glGetUniformBlockIndex(m_program, "Camera"), 0);
 	}
 
 	OpenGLShader::~OpenGLShader() {

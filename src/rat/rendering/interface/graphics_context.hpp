@@ -4,6 +4,7 @@
 
 #include "mesh.hpp"
 #include "pipeline.hpp"
+#include "rat/rendering/camera.hpp"
 #include "rat/rendering/drawable.hpp"
 #include "rat/rendering/render_target.hpp"
 #include "rat/rendering/vertex.hpp"
@@ -35,7 +36,7 @@ namespace rat {
 		) = 0;
 		virtual void destroyPipeline(Pipeline* pipeline) = 0;
 
-		virtual void render(std::span<const Drawable> drawables) = 0;
+		virtual void render(const Camera& camera, std::span<const Drawable> drawables) = 0;
 
 		GraphicsBackend getGraphicsBackend() const { return m_graphicsBackend; }
 		RenderTarget& getMainRenderTarget() const { return *renderTarget; }
