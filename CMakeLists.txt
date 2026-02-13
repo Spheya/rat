@@ -59,9 +59,10 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(glfw glm)
 
 add_subdirectory(external/glad)
+add_subdirectory(external/tinyobjloader)
 target_link_libraries(rat
     PUBLIC glm
-    PRIVATE glad glfw
+    PRIVATE glad glfw tinyobjloader
 )
 
 if(MSVC)
