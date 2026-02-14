@@ -34,7 +34,11 @@ int main() {
 	rat::Pipeline* pipeline = context->createPipeline(shader);
 
 	rat::Mesh* quad = context->createMesh(vertices, indices);
-	rat::Material material = { .pipeline = pipeline };
+
+	constexpr unsigned textureData[] = { 0x00000000u, 0xFFFFFFFFu, 0xFFFFFFFFu, 0x00000000u };
+	rat::Texture2D* texture = context->createTexture2D(textureData, 2, 2, rat::TextureFormat::RGBA);
+
+	rat::Material material = { .pipeline = pipeline, .texture = texture };
 	rat::Drawable drawable = { .mesh = quad, .material = &material, .matrix = glm::mat4(1.0f) };
 
 	while(!context->isCloseRequested()) {

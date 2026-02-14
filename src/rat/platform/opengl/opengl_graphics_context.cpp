@@ -7,6 +7,7 @@
 #include "opengl_mesh.hpp"
 #include "opengl_pipeline.hpp"
 #include "opengl_shader.hpp"
+#include "opengl_texture.hpp"
 #include "rat/core/logger.hpp"
 #include "rat/platform/glfw/glfw.hpp"
 
@@ -100,6 +101,16 @@ namespace rat {
 		delete static_cast<OpenGLPipeline*>(pipeline);
 	}
 
+	Texture2D* OpenGLGraphicsContext::createTexture2D(const void* data, unsigned width, unsigned height, TextureFormat format) {
+		auto* tex = new OpenGLTexture2D();
+		tex->setData(data, width, height, format);
+		return tex;
+	}
+
+	void OpenGLGraphicsContext::destroyTexture2D(Texture2D* texture) {
+		delete static_cast<OpenGLTexture2D*>(texture);
+	}
+
 	void OpenGLGraphicsContext::render(std::span<const Drawable> drawables) {
 		renderDrawables(drawables);
 	}
@@ -113,7 +124,8 @@ namespace rat {
 		glBindBuffer(GL_ARRAY_BUFFER, m_instanceBuffer);
 		glBufferData(GL_ARRAY_BUFFER, instanceBuffer.size() * sizeof(glm::mat4), instanceBuffer.data(), GL_STREAM_DRAW);
 
-		const auto* boundPipeline = static_cast<const OpenGLPipeline*>(drawables.front().material->pipeline);
+		const auto* boundMaterial = drawables.front().material;
+		const auto* boundPipeline = static_cast<const OpenGLPipeline*>(boundMaterial->pipeline);
 		const auto* boundMesh = static_cast<const OpenGLMesh*>(drawables.front().mesh);
 
 		glBindVertexArray(boundMesh->m_vao);
@@ -121,12 +133,18 @@ namespace rat {
 
 		size_t batchStart = 0;
 		for(size_t i = 1; i < drawables.size(); ++i) {
-			const auto* newPipeline = static_cast<const OpenGLPipeline*>(drawables[i].material->pipeline);
+			const auto* newMaterial = drawables.front().material;
+			const auto* newPipeline = static_cast<const OpenGLPipeline*>(newMaterial->pipeline);
 			const auto* newMesh = static_cast<const OpenGLMesh*>(drawables[i].mesh);
 
 			if(newPipeline != boundPipeline || newMesh != boundMesh) {
 				glDrawElementsInstanced(GL_TRIANGLES, boundMesh->indexCount(), GL_UNSIGNED_INT, nullptr, i - batchStart);
 				batchStart = i;
+
+				if(newMaterial != boundMaterial) {
+					boundMaterial = newMaterial;
+					glBindTexture(GL_TEXTURE0, static_cast<const OpenGLTexture2D*>(newMaterial->texture)->m_texture);
+				}
 
 				if(newPipeline != boundPipeline) {
 					boundPipeline = newPipeline;

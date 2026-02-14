@@ -33,6 +33,9 @@ namespace rat {
 		) override;
 		virtual void destroyPipeline(Pipeline* pipeline) override;
 
+		virtual Texture2D* createTexture2D(const void* data, unsigned width, unsigned height, TextureFormat format) override;
+		virtual void destroyTexture2D(Texture2D* texture) override;
+
 		virtual void render(std::span<const Drawable> drawables) override;
 
 	private:

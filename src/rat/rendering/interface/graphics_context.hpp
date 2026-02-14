@@ -8,6 +8,7 @@
 #include "rat/rendering/render_target.hpp"
 #include "rat/rendering/vertex.hpp"
 #include "shader.hpp"
+#include "texture.hpp"
 
 namespace rat {
 
@@ -34,6 +35,9 @@ namespace rat {
 		    const Shader* shader, CullMode cullMode = CullMode::On, DepthTestMode depthTestMode = DepthTestMode::On, bool depthWriteEnabled = true
 		) = 0;
 		virtual void destroyPipeline(Pipeline* pipeline) = 0;
+
+		virtual Texture2D* createTexture2D(const void* data, unsigned width, unsigned height, TextureFormat format) = 0;
+		virtual void destroyTexture2D(Texture2D* texture) = 0;
 
 		virtual void render(std::span<const Drawable> drawables) = 0;
 
