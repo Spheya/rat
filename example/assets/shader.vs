@@ -8,11 +8,14 @@ layout(location = 4) in vec4 tangent;
 
 layout(location = 5) in mat4 matrix_m;
 
+out vec2 texCoords;
+
 layout(std140) uniform Camera {
     mat4 matrix_p;
     mat4 matrix_v;
 };
 
 void main() {
+    texCoords = uv;
     gl_Position = matrix_p * matrix_v * matrix_m * vec4(position, 1.0);
 }

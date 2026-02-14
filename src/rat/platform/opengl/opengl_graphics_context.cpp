@@ -32,6 +32,7 @@ namespace rat {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		m_glContext = glfw::createWindow(appInfo);
+		glfwSwapInterval(1);
 		if(m_glContext == nullptr) {
 			rat::error("Could not create a window");
 			return;
@@ -156,7 +157,8 @@ namespace rat {
 
 				if(newMaterial != boundMaterial) {
 					boundMaterial = newMaterial;
-					glBindTexture(GL_TEXTURE0, static_cast<const OpenGLTexture2D*>(newMaterial->texture)->m_texture);
+					glActiveTexture(GL_TEXTURE0);
+					glBindTexture(GL_TEXTURE_2D, static_cast<const OpenGLTexture2D*>(newMaterial->texture)->m_texture);
 				}
 
 				if(newPipeline != boundPipeline) {

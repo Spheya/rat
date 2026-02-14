@@ -35,7 +35,7 @@ int main() {
 
 	rat::Mesh* quad = context->createMesh(vertices, indices);
 
-	constexpr unsigned textureData[] = { 0x00000000u, 0xFFFFFFFFu, 0xFFFFFFFFu, 0x00000000u };
+	constexpr unsigned textureData[] = { 0x0000FF00u, 0xFFFFFFFFu, 0xFFFFFFFFu, 0x0000FF00u };
 	rat::Texture2D* texture = context->createTexture2D(textureData, 2, 2, rat::TextureFormat::RGBA);
 
 	rat::Material material = { .pipeline = pipeline, .texture = texture };
@@ -51,7 +51,7 @@ int main() {
 	while(!context->isCloseRequested()) {
 		context->beginFrame();
 
-		f += 0.03f;
+		f += 0.003f;
 		drawable.matrix = glm::rotate(glm::mat4(1.0f), f, glm::vec3(1.0f));
 
 		context->render(camera, std::span(&drawable, 1));
