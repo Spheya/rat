@@ -56,12 +56,19 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/g-truc/glm
     GIT_TAG 1.0.3
 )
-FetchContent_MakeAvailable(glfw glm)
+
+FetchContent_Declare(
+    tinyobjloader
+    GIT_REPOSITORY https://github.com/tinyobjloader/tinyobjloader
+    GIT_TAG v2.0.0rc13
+)
+
+FetchContent_MakeAvailable(glfw glm tinyobjloader)
 
 add_subdirectory(external/glad)
 target_link_libraries(rat
     PUBLIC glm
-    PRIVATE glad glfw
+    PRIVATE glad glfw tinyobjloader
 )
 
 if(MSVC)

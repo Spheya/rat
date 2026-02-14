@@ -13,8 +13,15 @@
 
 namespace rat {
 
+	namespace {
+		struct CameraBuffer {
+			glm::mat4 matrix_p;
+			glm::mat4 matrix_v;
+		};
+	} // namespace
+
 	OpenGLGraphicsContext::OpenGLGraphicsContext(const ApplicationInfo& appInfo) :
-	    BaseGraphicsContext(GraphicsBackend::OpenGL3), m_glContext(nullptr), m_instanceBuffer(0) {
+	    BaseGraphicsContext(GraphicsBackend::OpenGL3), m_glContext(nullptr), m_instanceBuffer(0), m_cameraBuffer(0) {
 		glfw::setupErrorHandler();
 		if(glfwInit() == GLFW_FALSE) {
 			rat::error("Could not initialize GLFW");
@@ -47,7 +54,8 @@ namespace rat {
 		m_window = std::make_unique<glfw::Window>(m_glContext);
 		renderTarget = m_window.get();
 
-		glGenBuffers(1, &m_instanceBuffer);
+		glGenBuffers(2, &m_instanceBuffer);
+		glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_cameraBuffer);
 	}
 
 	OpenGLGraphicsContext::~OpenGLGraphicsContext() {
@@ -111,7 +119,12 @@ namespace rat {
 		delete static_cast<OpenGLTexture2D*>(texture);
 	}
 
-	void OpenGLGraphicsContext::render(std::span<const Drawable> drawables) {
+	void OpenGLGraphicsContext::render(const Camera& camera, std::span<const Drawable> drawables) {
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		CameraBuffer cam{ .matrix_p = camera.projectionMatrix, .matrix_v = camera.viewMatrix };
+		glBindBuffer(GL_UNIFORM_BUFFER, m_cameraBuffer);
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(CameraBuffer), &cam, GL_DYNAMIC_DRAW);
 		renderDrawables(drawables);
 	}
 

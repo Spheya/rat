@@ -41,10 +41,20 @@ int main() {
 	rat::Material material = { .pipeline = pipeline, .texture = texture };
 	rat::Drawable drawable = { .mesh = quad, .material = &material, .matrix = glm::mat4(1.0f) };
 
+	float aspect = float(context->getMainRenderTarget().getWidth()) / float(context->getMainRenderTarget().getHeight());
+	glm::mat4 projMat = glm::perspective(1.0f, aspect, 0.1f, 1000.0f);
+	glm::mat4 viewMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -10.0f));
+	rat::Camera camera = { .projectionMatrix = projMat, .viewMatrix = viewMat };
+
+	float f = 0.0f;
+
 	while(!context->isCloseRequested()) {
 		context->beginFrame();
 
-		context->render(std::span(&drawable, 1));
+		f += 0.03f;
+		drawable.matrix = glm::rotate(glm::mat4(1.0f), f, glm::vec3(1.0f));
+
+		context->render(camera, std::span(&drawable, 1));
 
 		context->endFrame();
 	}

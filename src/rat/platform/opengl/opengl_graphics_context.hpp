@@ -36,7 +36,7 @@ namespace rat {
 		virtual Texture2D* createTexture2D(const void* data, unsigned width, unsigned height, TextureFormat format) override;
 		virtual void destroyTexture2D(Texture2D* texture) override;
 
-		virtual void render(std::span<const Drawable> drawables) override;
+		virtual void render(const Camera& camera, std::span<const Drawable> drawables) override;
 
 	private:
 		void renderDrawables(std::span<const Drawable> drawables);
@@ -44,8 +44,10 @@ namespace rat {
 
 	private:
 		GLFWwindow* m_glContext;
-		GLuint m_instanceBuffer;
 		std::unique_ptr<glfw::Window> m_window;
+
+		GLuint m_instanceBuffer;
+		GLuint m_cameraBuffer;
 	};
 
 } // namespace rat
