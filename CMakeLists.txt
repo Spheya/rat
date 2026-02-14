@@ -34,9 +34,9 @@ target_sources(rat PRIVATE
 )
 
 target_include_directories(rat PUBLIC
-  ${CMAKE_CURRENT_SOURCE_DIR}/src
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
-  $<INSTALL_INTERFACE:src>
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+    $<INSTALL_INTERFACE:src>
 )
 
 set_target_properties(rat PROPERTIES
@@ -72,9 +72,9 @@ target_link_libraries(rat
 )
 
 if(MSVC)
-  target_compile_options(rat PRIVATE /W4 /WX)
+    target_compile_options(rat PRIVATE /W4 /WX)
 else()
-  target_compile_options(rat PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(rat PRIVATE -Wall -Wextra -Wpedantic -Werror)
 endif()
 
 if(RAT_BUILD_EXAMPLES)
