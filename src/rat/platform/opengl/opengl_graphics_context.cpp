@@ -32,7 +32,6 @@ namespace rat {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		m_glContext = glfw::createWindow(appInfo);
-		glfwSwapInterval(1);
 		if(m_glContext == nullptr) {
 			rat::error("Could not create a window");
 			return;
@@ -54,6 +53,8 @@ namespace rat {
 
 		m_window = std::make_unique<glfw::Window>(m_glContext);
 		renderTarget = m_window.get();
+
+		glfwSwapInterval(1);
 
 		glGenBuffers(2, &m_instanceBuffer);
 		glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_cameraBuffer);
