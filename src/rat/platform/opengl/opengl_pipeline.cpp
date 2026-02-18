@@ -12,13 +12,13 @@ namespace rat {
 		if(depthTestMode != DepthTestMode::Off) {
 			m_enableDepthTest = true;
 			switch(depthTestMode) {
-			case DepthTestMode::LessThan: m_depthFunc = GL_LESS;
-			case DepthTestMode::LessThanEqual: m_depthFunc = GL_LEQUAL;
-			case DepthTestMode::GreaterThan: m_depthFunc = GL_GREATER;
-			case DepthTestMode::GreaterThanEqual: m_depthFunc = GL_GEQUAL;
-			case DepthTestMode::Equal: m_depthFunc = GL_EQUAL;
-			case DepthTestMode::NotEqual: m_depthFunc = GL_NOTEQUAL;
-			case DepthTestMode::Always: m_depthFunc = GL_ALWAYS;
+			case DepthTestMode::LessThan: m_depthFunc = GL_LESS; break;
+			case DepthTestMode::LessThanEqual: m_depthFunc = GL_LEQUAL; break;
+			case DepthTestMode::GreaterThan: m_depthFunc = GL_GREATER; break;
+			case DepthTestMode::GreaterThanEqual: m_depthFunc = GL_GEQUAL; break;
+			case DepthTestMode::Equal: m_depthFunc = GL_EQUAL; break;
+			case DepthTestMode::NotEqual: m_depthFunc = GL_NOTEQUAL; break;
+			case DepthTestMode::Always: m_depthFunc = GL_ALWAYS; break;
 			}
 		}
 

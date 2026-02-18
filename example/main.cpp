@@ -5,6 +5,7 @@
 #include <rat/core/file_system.hpp>
 #include <rat/core/logger.hpp>
 #include <rat/core/rat.hpp>
+#include <rat/loader/mesh_loader.hpp>
 #include <rat/rendering/drawable.hpp>
 #include <rat/rendering/graphics.hpp>
 
@@ -28,22 +29,23 @@ int main() {
 	};
 	const std::vector<unsigned> indices = { 0, 1, 2, 0, 2, 3 };
 
+	rat::MeshData meshData = rat::loadObj("assets/bunny.obj")[0];
+	rat::Mesh* bunny = context->createMesh(meshData.vertices, meshData.indices);
+
 	std::string vertexShader = fileSystem.loadTextFile(rat::FileSystem::Directory::Assets, "shader.vs");
 	std::string fragmentShader = fileSystem.loadTextFile(rat::FileSystem::Directory::Assets, "shader.fs");
 	rat::Shader* shader = context->createShader(vertexShader.c_str(), fragmentShader.c_str());
 	rat::Pipeline* pipeline = context->createPipeline(shader);
 
-	rat::Mesh* quad = context->createMesh(vertices, indices);
-
 	constexpr unsigned textureData[] = { 0x0000FF00u, 0xFFFFFFFFu, 0xFFFFFFFFu, 0x0000FF00u };
 	rat::Texture2D* texture = context->createTexture2D(textureData, 2, 2, rat::TextureFormat::RGBA);
 
 	rat::Material material = { .pipeline = pipeline, .texture = texture };
-	rat::Drawable drawable = { .mesh = quad, .material = &material, .matrix = glm::mat4(1.0f) };
+	rat::Drawable drawable = { .mesh = bunny, .material = &material, .matrix = glm::mat4(20.0f) };
 
 	float aspect = float(context->getMainRenderTarget().getWidth()) / float(context->getMainRenderTarget().getHeight());
 	glm::mat4 projMat = glm::perspective(1.0f, aspect, 0.1f, 1000.0f);
-	glm::mat4 viewMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -10.0f));
+	glm::mat4 viewMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -30.0f));
 	rat::Camera camera = { .projectionMatrix = projMat, .viewMatrix = viewMat };
 
 	float f = 0.0f;
@@ -59,7 +61,8 @@ int main() {
 		context->endFrame();
 	}
 
-	context->destroyMesh(quad);
+	context->destroyTexture2D(texture);
+	context->destroyMesh(bunny);
 	context->destroyPipeline(pipeline);
 	context->destroyShader(shader);
 	rat::closeGraphicsContext(context);

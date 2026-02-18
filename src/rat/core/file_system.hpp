@@ -1,5 +1,6 @@
 #pragma once
 
+#include <span>
 #include <string>
 #include <vector>
 
@@ -12,7 +13,7 @@ namespace rat {
 		std::vector<char> loadFile(Directory directory, const char* path);
 		std::string loadTextFile(Directory directory, const char* path);
 
-		void writeFile(Directory directory, const char* path, const char* data, size_t size);
+		void writeFile(Directory directory, const char* path, std::span<char> data);
 		void writeTextFile(Directory directory, const char* path, const char* data);
 
 		bool exists(Directory directory, const char* path);

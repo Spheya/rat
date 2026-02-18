@@ -12,6 +12,8 @@ file(GLOB_RECURSE CORE_HEADERS ./src/rat/core/*.hpp)
 file(GLOB_RECURSE CORE_SOURCES ./src/rat/core/*.cpp)
 file(GLOB_RECURSE RENDERING_HEADERS ./src/rat/rendering/*.hpp)
 file(GLOB_RECURSE RENDERING_SOURCES ./src/rat/rendering/*.cpp)
+file(GLOB_RECURSE LOADER_HEADERS ./src/rat/loader/*.hpp)
+file(GLOB_RECURSE LOADER_SOURCES ./src/rat/loader/*.cpp)
 file(GLOB_RECURSE PLATFORM_GLFW_HEADERS ./src/rat/platform/glfw/*.hpp)
 file(GLOB_RECURSE PLATFORM_GLFW_SOURCES ./src/rat/platform/glfw/*.cpp)
 file(GLOB_RECURSE PLATFORM_OPENGL_HEADERS ./src/rat/platform/opengl/*.hpp)
@@ -21,6 +23,8 @@ source_group("Header Files/Core" FILES ${CORE_HEADERS})
 source_group("Source Files/Core" FILES ${CORE_SOURCES})
 source_group("Header Files/Rendering" FILES ${RENDERING_HEADERS})
 source_group("Source Files/Rendering" FILES ${RENDERING_SOURCES})
+source_group("Header Files/Loader" FILES ${LOADER_HEADERS})
+source_group("Source Files/Loader" FILES ${LOADER_SOURCES})
 source_group("Header Files/Platform/GLFW" FILES ${PLATFORM_GLFW_HEADERS})
 source_group("Source Files/Platform/GLFW" FILES ${PLATFORM_GLFW_SOURCES})
 source_group("Header Files/Platform/OpenGL" FILES ${PLATFORM_OPENGL_HEADERS})
@@ -31,6 +35,7 @@ target_sources(rat PRIVATE
     ${RENDERING_HEADERS} ${RENDERING_SOURCES}
     ${PLATFORM_GLFW_HEADERS} ${PLATFORM_GLFW_SOURCES}
     ${PLATFORM_OPENGL_HEADERS} ${PLATFORM_OPENGL_SOURCES}
+    ${LOADER_HEADERS} ${LOADER_SOURCES}
 )
 
 target_include_directories(rat PUBLIC
@@ -66,9 +71,11 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(glfw glm tinyobjloader)
 
 add_subdirectory(external/glad)
+add_subdirectory(external/mikktspace)
+
 target_link_libraries(rat
     PUBLIC glm
-    PRIVATE glad glfw tinyobjloader
+    PRIVATE glad glfw tinyobjloader mikktspace
 )
 
 if(MSVC)
