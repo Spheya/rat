@@ -2,6 +2,7 @@
 
 #include <span>
 
+#include <ImGuizmo.h>
 #include <glad/glad.h>
 #include <imgui.h>
 
@@ -95,6 +96,7 @@ namespace rat {
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
+		ImGuizmo::BeginFrame();
 #endif
 	}
 
