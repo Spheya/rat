@@ -2,8 +2,8 @@
 #include <string>
 #include <vector>
 
+#include <imgui.h>
 #include <rat/core/file_system.hpp>
-#include <rat/core/logger.hpp>
 #include <rat/core/rat.hpp>
 #include <rat/loader/mesh_loader.hpp>
 #include <rat/rendering/drawable.hpp>
@@ -52,6 +52,8 @@ int main() {
 
 	while(!context->isCloseRequested()) {
 		context->beginFrame();
+
+		ImGui::ShowDemoWindow();
 
 		f += 0.003f;
 		drawable.matrix = glm::rotate(glm::mat4(1.0f), f, glm::vec3(1.0f));

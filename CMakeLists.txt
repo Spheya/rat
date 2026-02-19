@@ -72,9 +72,10 @@ FetchContent_MakeAvailable(glfw glm tinyobjloader)
 
 add_subdirectory(external/glad)
 add_subdirectory(external/mikktspace)
+add_subdirectory(external/imgui)
 
 target_link_libraries(rat
-    PUBLIC glm
+    PUBLIC glm imgui
     PRIVATE glad glfw tinyobjloader mikktspace
 )
 

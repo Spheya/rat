@@ -3,13 +3,16 @@
 #include <span>
 
 #include <glad/glad.h>
+#include <imgui.h>
 
+#include "imgui_impl_opengl3.hpp"
 #include "opengl_mesh.hpp"
 #include "opengl_pipeline.hpp"
 #include "opengl_shader.hpp"
 #include "opengl_texture.hpp"
 #include "rat/core/logger.hpp"
 #include "rat/platform/glfw/glfw.hpp"
+#include "rat/platform/glfw/imgui_impl_glfw.hpp"
 
 namespace rat {
 
@@ -49,10 +52,21 @@ namespace rat {
 		rat::info("OpenGL version: {}", (const char*)glGetString(GL_VERSION)); // NOLINT
 		rat::info("OpenGL vendor: {}", (const char*)glGetString(GL_VENDOR));   // NOLINT
 		rat::info("OpenGL device: {}", (const char*)glGetString(GL_RENDERER)); // NOLINT
+		rat::info("ImGui version: {}", ImGui::GetVersion());                   // NOLINT
 #endif
 
 		m_window = std::make_unique<glfw::Window>(m_glContext);
 		renderTarget = m_window.get();
+
+#ifndef IMGUI_DISABLE
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+		ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+
+		ImGui_ImplGlfw_InitForOpenGL(m_glContext, true);
+		ImGui_ImplOpenGL3_Init("#version 330");
+#endif
 
 		glfwSwapInterval(1);
 
@@ -76,9 +90,20 @@ namespace rat {
 
 	void OpenGLGraphicsContext::beginFrame() {
 		glfwPollEvents();
+
+#ifndef IMGUI_DISABLE
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+#endif
 	}
 
 	void OpenGLGraphicsContext::endFrame() {
+#ifndef IMGUI_DISABLE
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+#endif
+
 		glfwSwapBuffers(m_glContext);
 	}
 
