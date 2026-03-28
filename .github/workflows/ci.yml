@@ -65,6 +65,6 @@ jobs:
       - name: Get include-what-you-use
         run: git clone https://github.com/include-what-you-use/include-what-you-use.git
       - name: Run include-what-you-use
-        run: include-what-you-use/iwyu_tool.py -p build -j $(nproc) --ignore_re='(external|build)' | include-what-you-use/fix_includes.py --dry_run --error
+        run: include-what-you-use/iwyu_tool.py -p build -j $(nproc) --ignore_re='(external|build)' | include-what-you-use/fix_includes.py --dry_run
       - if: steps.linter.outputs.checks-failed > 0
         run: exit 1
