@@ -48,7 +48,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - run: clang-tidy -p build example/main.cpp -dump-config
       - uses: actions/download-artifact@v8
         with:
           name: build-linux-${{ matrix.preset }}
