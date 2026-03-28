@@ -83,7 +83,7 @@ target_link_libraries(rat
 )
 
 if(RAT_USE_IWYU)
-    set_target_properties(MyApp PROPERTIES CXX_INCLUDE_WHAT_YOU_USE "include-what-you-use;-Xiwyu;--error")
+    set_target_properties(rat PROPERTIES CXX_INCLUDE_WHAT_YOU_USE "include-what-you-use;-Xiwyu;--error")
 endif()
 
 if(MSVC)
