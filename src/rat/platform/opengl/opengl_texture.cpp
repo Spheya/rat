@@ -2,11 +2,11 @@
 
 namespace rat {
 
-	static GLenum asOpenGLFormat(TextureFormat) {
+	static GLenum asOpenGLFormat(TextureFormat /*format*/) {
 		return GL_RGBA;
 	}
 
-	static GLenum asOpenGLInternalFormat(TextureFormat) {
+	static GLenum asOpenGLInternalFormat(TextureFormat /*format*/) {
 		return GL_RGBA;
 	}
 

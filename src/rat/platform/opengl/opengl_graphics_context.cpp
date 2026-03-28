@@ -48,11 +48,11 @@ namespace rat {
 #ifndef RAT_STRIP_LOGGER
 		int major, minor, rev;
 		glfwGetVersion(&major, &minor, &rev);
-		rat::info("GLFW version: {}.{}.{}", major, minor, rev);
-		rat::info("OpenGL version: {}", (const char*)glGetString(GL_VERSION)); // NOLINT
-		rat::info("OpenGL vendor: {}", (const char*)glGetString(GL_VENDOR));   // NOLINT
-		rat::info("OpenGL device: {}", (const char*)glGetString(GL_RENDERER)); // NOLINT
-		rat::info("ImGui version: {}", ImGui::GetVersion());                   // NOLINT
+		rat::log("GLFW version: {}.{}.{}", major, minor, rev);
+		rat::log("OpenGL version: {}", (const char*)glGetString(GL_VERSION)); // NOLINT
+		rat::log("OpenGL vendor: {}", (const char*)glGetString(GL_VENDOR));   // NOLINT
+		rat::log("OpenGL device: {}", (const char*)glGetString(GL_RENDERER)); // NOLINT
+		rat::log("ImGui version: {}", ImGui::GetVersion());                   // NOLINT
 #endif
 
 		m_window = std::make_unique<glfw::Window>(m_glContext);

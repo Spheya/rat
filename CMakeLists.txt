@@ -47,25 +47,27 @@ target_include_directories(rat PUBLIC
 set_target_properties(rat PROPERTIES
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED ON
-    CXX_CLANG_TIDY clang-tidy
 )
 
 FetchContent_Declare(
     glfw
     GIT_REPOSITORY https://github.com/glfw/glfw
     GIT_TAG 3.4
+    SYSTEM
 )
 
 FetchContent_Declare(
     glm
     GIT_REPOSITORY https://github.com/g-truc/glm
     GIT_TAG 1.0.3
+    SYSTEM
 )
 
 FetchContent_Declare(
     tinyobjloader
     GIT_REPOSITORY https://github.com/tinyobjloader/tinyobjloader
     GIT_TAG v2.0.0rc13
+    SYSTEM
 )
 
 FetchContent_MakeAvailable(glfw glm tinyobjloader)
