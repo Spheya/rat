@@ -50,8 +50,6 @@ jobs:
         with:
           name: build-linux-${{ matrix.preset }}
           path: build/
-      - name: Install dependencies
-        run: sudo apt update && sudo apt install iwyu python3-pip && pip install clang-tool-chain
       - uses: cpp-linter/cpp-linter-action@v2
         id: linter
         env:
@@ -62,9 +60,11 @@ jobs:
           version: '19'
           database: 'build'
           step-summary: true
-          files-changed-only: false
+          files-changed-only: true
           ignore: 'external|build'
+      - name: Get include-what-you-use
+        run: git clone https://github.com/include-what-you-use/include-what-you-use.git
       - name: Run include-what-you-use
-        run: iwyu_tool.py -p build -j $(nproc) --ignore_re='(external|build)' | fix_includes.py --dry_run --error
+        run: include-what-you-use/iwyu_tool.py -p build -j $(nproc) --ignore_re='(external|build)' | include-what-you-use/fix_includes.py --dry_run --error
       - if: steps.linter.outputs.checks-failed > 0
         run: exit 1
