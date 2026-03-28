@@ -1,4 +1,5 @@
 // NOLINTBEGIN
+#define GLFW_INCLUDE_NONE
 
 // dear imgui: Platform Backend for GLFW
 // This needs to be used along with a Renderer (e.g. OpenGL3, Vulkan, WebGPU..)
