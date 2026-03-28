@@ -2,6 +2,7 @@
 project("rat")
 
 option(RAT_BUILD_EXAMPLES "Build example programs" ON)
+option(RAT_USE_IWYU "Use include-what-you-use" OFF)
 
 include(FetchContent)
 
@@ -80,6 +81,10 @@ target_link_libraries(rat
     PUBLIC glm imgui
     PRIVATE glad glfw tinyobjloader mikktspace
 )
+
+if(RAT_USE_IWYU)
+    set_target_properties(MyApp PROPERTIES CXX_INCLUDE_WHAT_YOU_USE "include-what-you-use;-Xiwyu;--error")
+endif()
 
 if(MSVC)
     target_compile_options(rat PRIVATE /W4 /WX)

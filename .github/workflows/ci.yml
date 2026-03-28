@@ -28,6 +28,7 @@ jobs:
             -DCMAKE_CXX_COMPILER=clang++ \
             -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
             -DCMAKE_CXX_FLAGS="-Werror" \
+            -RAT_USE_IWYU=ON \
             -B build
           cmake --build build --parallel $(nproc)
       - uses: actions/upload-artifact@v7
