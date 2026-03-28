@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libwayland-dev libxkbcommon-dev iwyu
+          sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libwayland-dev libxkbcommon-dev
       - name: Build project
         run: |
           cmake \
@@ -28,7 +28,6 @@ jobs:
             -DCMAKE_CXX_COMPILER=clang++ \
             -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
             -DCMAKE_CXX_FLAGS="-Werror" \
-            -DCMAKE_CXX_INCLUDE_WHAT_YOU_USE="include-what-you-use;-Xiwyu;--error" \
             -B build
           cmake --build build --parallel $(nproc)
       - uses: actions/upload-artifact@v7
@@ -64,5 +63,9 @@ jobs:
           step-summary: true
           files-changed-only: false
           ignore: 'external|build'
+      - name: Run Include What You Use
+        uses: EmilGedda/include-what-you-use-action@v1
+        with:
+          compilation-database-path: 'build'
       - if: steps.linter.outputs.checks-failed > 0
         run: exit 1
