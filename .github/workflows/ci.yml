@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libwayland-dev libxkbcommon-dev
+          sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libwayland-dev libxkbcommon-dev include-what-you-use
       - name: Build project
         run: |
           mkdir build
@@ -29,6 +29,7 @@ jobs:
             -DCMAKE_CXX_COMPILER=clang++ \
             -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
             -DCMAKE_CXX_FLAGS="-Werror" \
+            -DCMAKE_CXX_INCLUDE_WHAT_YOU_USE=include-what-you-use \
             -B build
           cmake --build build --parallel $(nproc)
       - uses: actions/upload-artifact@v7
