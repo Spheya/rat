@@ -10,7 +10,7 @@
 #include "rat/core/logger.hpp"
 
 namespace tinyobj {
-	bool operator==(const index_t& a, const index_t& b) {
+	static bool operator==(const index_t& a, const index_t& b) {
 		return a.vertex_index == b.vertex_index && a.normal_index == b.normal_index && a.texcoord_index == b.texcoord_index;
 	}
 } // namespace tinyobj
@@ -33,7 +33,7 @@ namespace std {
 namespace rat {
 
 	static int getNumFaces(const SMikkTSpaceContext* pContext) {
-		return static_cast<const MeshData*>(pContext->m_pUserData)->indices.size() / 3;
+		return int(static_cast<const MeshData*>(pContext->m_pUserData)->indices.size() / 3);
 	}
 
 	static int getNumVerticesOfFace([[maybe_unused]] const SMikkTSpaceContext* pContext, [[maybe_unused]] const int iFace) {
@@ -88,10 +88,10 @@ namespace rat {
 			if(existing != recorded.end()) {
 				indices.push_back(existing->second);
 				continue;
-			} else {
-				indices.push_back(vertices.size());
-				recorded.emplace(index, vertices.size());
 			}
+
+			indices.push_back(vertices.size());
+			recorded.emplace(index, vertices.size());
 
 			Vertex vertex = {};
 			vertex.color = glm::vec4(1.0f);
