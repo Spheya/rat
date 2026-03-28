@@ -1,4 +1,7 @@
 #include "glfw_window.hpp"
+
+#include <GLFW/glfw3.h>
+
 #include "glfw.hpp"
 
 namespace rat::glfw {
@@ -23,11 +26,8 @@ namespace rat::glfw {
 	glm::uvec2 Window::getSize() const {
 		int w;
 		int h;
-		float sx;
-		float sy;
-		glfwGetWindowSize(m_window, &w, &h);
-		glfwGetWindowContentScale(m_window, &sx, &sy);
-		return glm::uvec2(w * sx, h * sy);
+		glfwGetFramebufferSize(m_window, &w, &h);
+		return glm::uvec2(w, h);
 	}
 
 	glm::ivec2 Window::getPosition() const {
