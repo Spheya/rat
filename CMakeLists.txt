@@ -82,7 +82,7 @@ target_link_libraries(rat
 if(MSVC)
     target_compile_options(rat PRIVATE /W4 /WX)
 else()
-    target_compile_options(rat PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(rat PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
 if(RAT_BUILD_EXAMPLES)

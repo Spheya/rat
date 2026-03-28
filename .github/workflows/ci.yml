@@ -10,7 +10,7 @@ jobs:
     name: Build Project
     runs-on: ubuntu-latest
     container:
-      image: spheya/clang-cmake-ninja:latest
+      image: spheya/cpp-ci:latest
 
     strategy:
       matrix:
@@ -41,7 +41,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     container:
-      image: spheya/clang-cmake-ninja:latest
+      image: spheya/cpp-ci:latest
 
     strategy:
       matrix:
