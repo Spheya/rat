@@ -21,8 +21,10 @@ namespace rat::glfw {
 	}
 
 	glm::uvec2 Window::getSize() const {
-		int w, h;
-		float sx, sy;
+		int w;
+		int h;
+		float sx;
+		float sy;
 		glfwGetWindowSize(m_window, &w, &h);
 		glfwGetWindowContentScale(m_window, &sx, &sy);
 		return glm::uvec2(w * sx, h * sy);

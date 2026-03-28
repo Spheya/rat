@@ -1,4 +1,4 @@
-﻿cmake_minimum_required(VERSION 3.22)
+﻿cmake_minimum_required(VERSION 3.25)
 project("rat")
 
 option(RAT_BUILD_EXAMPLES "Build example programs" ON)
@@ -70,13 +70,12 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(glfw glm tinyobjloader)
 
-add_subdirectory(external/glad)
-add_subdirectory(external/mikktspace)
-add_subdirectory(external/imgui)
-add_subdirectory(external/imguizmo)
+add_subdirectory(external/glad SYSTEM)
+add_subdirectory(external/mikktspace SYSTEM)
+add_subdirectory(external/imgui SYSTEM)
 
 target_link_libraries(rat
-    PUBLIC glm imgui imguizmo
+    PUBLIC glm imgui
     PRIVATE glad glfw tinyobjloader mikktspace
 )
 
