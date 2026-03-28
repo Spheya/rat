@@ -17,7 +17,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install dependencies
-        run: sudo apt update && sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libwayland-dev libxkbcommon-dev
+        run: |
+          sudo apt update
+          sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libwayland-dev libxkbcommon-dev iwyu
       - name: Build project
         run: |
           mkdir build
@@ -27,6 +29,7 @@ jobs:
             -DCMAKE_CXX_COMPILER=clang++ \
             -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
             -DCMAKE_CXX_FLAGS="-Werror" \
+            -DCMAKE_CXX_INCLUDE_WHAT_YOU_USE=include-what-you-use -Xiwyu --error \
             -B build
           cmake --build build --parallel $(nproc)
       - uses: actions/upload-artifact@v7
@@ -60,11 +63,7 @@ jobs:
           version: '19'
           database: 'build'
           step-summary: true
-          files-changed-only: true
+          files-changed-only: false
           ignore: 'external|build'
-      - name: Get include-what-you-use
-        run: git clone https://github.com/include-what-you-use/include-what-you-use.git
-      - name: Run include-what-you-use
-        run: include-what-you-use/iwyu_tool.py -p build -j $(nproc) --ignore_re='(external|build)' | include-what-you-use/fix_includes.py --dry_run
       - if: steps.linter.outputs.checks-failed > 0
         run: exit 1
