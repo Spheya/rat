@@ -63,8 +63,8 @@ jobs:
           step-summary: true
           files-changed-only: false
           ignore: 'external|build'
-      - name: Run Include What You Use
-        uses: EmilGedda/include-what-you-use-action@v1
+      - name: Run include-what-you-use
+        uses: EmilGedda/include-what-you-use-action@v1.0
         with:
           compilation-database-path: 'build'
       - if: steps.linter.outputs.checks-failed > 0
