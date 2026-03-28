@@ -1,4 +1,3 @@
-#include <imgui.h>
 #include <rat/core/rat.hpp>
 #include <rat/loader/mesh_loader.hpp>
 #include <rat/rendering/drawable.hpp>
