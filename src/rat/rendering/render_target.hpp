@@ -6,6 +6,7 @@ namespace rat {
 
 	class RenderTarget {
 	public:
+		RenderTarget() = default;
 		RenderTarget(const RenderTarget&) = default;
 		RenderTarget& operator=(const RenderTarget&) = default;
 		RenderTarget(RenderTarget&&) = default;
