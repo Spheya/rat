@@ -58,7 +58,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           style: "file"
-          tidy-checks: ""
           version: "19"
           database: "build"
           step-summary: true
