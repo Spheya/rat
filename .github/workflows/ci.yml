@@ -51,7 +51,7 @@ jobs:
           name: build-linux-${{ matrix.preset }}
           path: build/
       - name: Install dependencies
-        run: sudo apt update && sudo apt install iwyu python3-pip && pip install iwyu_tool fix_includes
+        run: sudo apt update && sudo apt install iwyu python3-pip && pip install clang-tool-chain
       - uses: cpp-linter/cpp-linter-action@v2
         id: linter
         env:
