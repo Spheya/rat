@@ -1,7 +1,4 @@
 #include "glfw_window.hpp"
-
-#include <GLFW/glfw3.h>
-
 #include "glfw.hpp"
 
 namespace rat::glfw {
