@@ -48,6 +48,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - run: clang-tidy -p build example/main.cpp -dump-config
       - uses: actions/download-artifact@v8
         with:
           name: build-linux-${{ matrix.preset }}
@@ -57,9 +58,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          style: "file"
-          version: "19"
-          database: "build"
+          style: 'file'
+          tidy-checks: ''
+          version: '19'
+          database: 'build'
           step-summary: true
+          files-changed-only: false
       - if: steps.linter.outputs.checks-failed > 0
         run: exit 1
