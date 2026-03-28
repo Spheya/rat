@@ -47,11 +47,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        run: sudo apt update && sudo apt install iwyu
       - uses: actions/download-artifact@v8
         with:
           name: build-linux-${{ matrix.preset }}
           path: build/
+      - name: Install dependencies
+        run: sudo apt update && sudo apt install iwyu
       - uses: cpp-linter/cpp-linter-action@v2
         id: linter
         env:
@@ -64,6 +65,7 @@ jobs:
           step-summary: true
           files-changed-only: false
           ignore: 'external|build'
-      - run: iwyu_tool.py -p build -j $(nproc) --ignore_re='(external|build)' | fix_includes.py --dry_run --error
+      - name: Run include-what-you-use
+        run: iwyu_tool.py -p build -j $(nproc) --ignore_re='(external|build)' | fix_includes.py --dry_run --error
       - if: steps.linter.outputs.checks-failed > 0
         run: exit 1
