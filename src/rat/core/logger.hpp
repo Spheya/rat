@@ -1,6 +1,6 @@
 #pragma once
 
-#include <format> // IWYU oragma: export
+#include <format> // IWYU pragma: export
 #include <string_view>
 #include <utility>
 
