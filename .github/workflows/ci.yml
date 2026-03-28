@@ -64,5 +64,6 @@ jobs:
           database: 'build'
           step-summary: true
           files-changed-only: false
+          ignore: 'external|build'
       - if: steps.linter.outputs.checks-failed > 0
         run: exit 1
