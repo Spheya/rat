@@ -17,9 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libwayland-dev libxkbcommon-dev iwyu
+        run: sudo apt update && sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libwayland-dev libxkbcommon-dev iwyu
       - name: Build project
         run: |
           mkdir build
@@ -49,6 +47,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        run: sudo apt update && sudo apt install iwyu
       - uses: actions/download-artifact@v8
         with:
           name: build-linux-${{ matrix.preset }}
@@ -65,5 +64,6 @@ jobs:
           step-summary: true
           files-changed-only: false
           ignore: 'external|build'
+      - run: iwyu_tool.py -p build -j $(nproc) --ignore_re='(external|build)' | fix_includes.py --dry_run --error
       - if: steps.linter.outputs.checks-failed > 0
         run: exit 1
