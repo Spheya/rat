@@ -1,77 +1,42 @@
 #pragma once
 
-#include <concepts>
-#include <format>
-#include <functional>
-#include <source_location>
+#include <format> // IWYU pragma: export
 #include <string_view>
-#include <type_traits>
+#include <utility>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_access.hpp>
+
+namespace glm {
+	template<length_t L, typename T, qualifier Q>
+	struct vec;
+	template<length_t C, length_t R, typename T, qualifier Q>
+	struct mat;
+	template<typename T, qualifier Q>
+	struct qua;
+} // namespace glm
 
 namespace rat {
 
-	enum class LogLevel { None = 0, Error = 1, Warn = 2, Info = 3, Trace = 4 };
+	enum class LogLevel { Log, Warn, Error };
 
-	template<typename... Args>
-	struct LogMessageImpl {
-		template<typename T>
-		    requires std::convertible_to<const T&, std::basic_string_view<char>>
-		consteval LogMessageImpl(T const& message, std::source_location location = std::source_location::current()) :
-		    message(message), location(location) {}
-
-		std::format_string<Args...> message;
-		std::source_location location;
-	};
-
-	template<typename... Args>
-	using LogMessage = LogMessageImpl<std::type_identity_t<Args>...>;
-
-	void setMessageCallback(std::function<void(std::string_view, std::source_location, LogLevel)> callback);
-	void message(std::string_view message, std::source_location location, LogLevel level);
+	void message(std::string_view message, LogLevel level);
 
 #ifndef RAT_STRIP_LOGGER
 
 	template<typename... Args>
-	inline void log(LogMessage<Args...> message, Args&&... args) {
-		rat::message(std::format(message.message, std::forward<Args&&>(args)...), message.location, LogLevel::Trace);
+	inline void log(std::format_string<Args...> fmt, Args&&... args) {
+		rat::message(std::format(fmt, std::forward<Args&&>(args)...), LogLevel::Log);
 	}
 
 	template<typename... Args>
-	inline void info(LogMessage<Args...> message, Args&&... args) {
-		rat::message(std::format(message.message, std::forward<Args&&>(args)...), message.location, LogLevel::Info);
+	inline void warn(std::format_string<Args...> fmt, Args&&... args) {
+		rat::message(std::format(fmt, std::forward<Args&&>(args)...), LogLevel::Warn);
 	}
 
 	template<typename... Args>
-	inline void warn(LogMessage<Args...> message, Args&&... args) {
-		rat::message(std::format(message.message, std::forward<Args&&>(args)...), message.location, LogLevel::Warn);
-	}
-
-	template<typename... Args>
-	inline void error(LogMessage<Args...> message, Args&&... args) {
-		rat::message(std::format(message.message, std::forward<Args&&>(args)...), message.location, LogLevel::Error);
-	}
-
-	template<typename T>
-	    requires(!std::convertible_to<const T&, std::basic_string_view<char>>)
-	inline void log(const T& value, std::source_location location = std::source_location::current()) {
-		message(std::format("{}", value), location, LogLevel::Trace);
-	}
-
-	template<typename T>
-	    requires(!std::convertible_to<const T&, std::basic_string_view<char>>)
-	inline void info(const T& value, std::source_location location = std::source_location::current()) {
-		message(std::format("{}", value), location, LogLevel::Info);
-	}
-
-	template<typename T>
-	    requires(!std::convertible_to<const T&, std::basic_string_view<char>>)
-	inline void warn(const T& value, std::source_location location = std::source_location::current()) {
-		message(std::format("{}", value), location, LogLevel::Warn);
-	}
-
-	template<typename T>
-	    requires(!std::convertible_to<const T&, std::basic_string_view<char>>)
-	inline void error(const T& value, std::source_location location = std::source_location::current()) {
-		message(std::format("{}", value), location, LogLevel::Error);
+	inline void error(std::format_string<Args...> fmt, Args&&... args) {
+		rat::message(std::format(fmt, std::forward<Args&&>(args)...), LogLevel::Error);
 	}
 
 #else
@@ -80,30 +45,74 @@ namespace rat {
 	inline void log([[maybe_unused]] LogMessage<Args...> message, [[maybe_unused]] Args&&... args) {}
 
 	template<typename... Args>
-	inline void info([[maybe_unused]] LogMessage<Args...> message, [[maybe_unused]] Args&&... args) {}
-
-	template<typename... Args>
 	inline void warn([[maybe_unused]] LogMessage<Args...> message, [[maybe_unused]] Args&&... args) {}
 
 	template<typename... Args>
 	inline void error([[maybe_unused]] LogMessage<Args...> message, [[maybe_unused]] Args&&... args) {}
 
-	template<typename T>
-	    requires(!std::convertible_to<const T&, std::basic_string_view<char>>)
-	inline void log([[maybe_unused]] const T& value, [[maybe_unused]] std::source_location location = std::source_location::current()) {}
-
-	template<typename T>
-	    requires(!std::convertible_to<const T&, std::basic_string_view<char>>)
-	inline void info([[maybe_unused]] const T& value, [[maybe_unused]] std::source_location location = std::source_location::current()) {}
-
-	template<typename T>
-	    requires(!std::convertible_to<const T&, std::basic_string_view<char>>)
-	inline void warn([[maybe_unused]] const T& value, [[maybe_unused]] std::source_location location = std::source_location::current()) {}
-
-	template<typename T>
-	    requires(!std::convertible_to<const T&, std::basic_string_view<char>>)
-	inline void error([[maybe_unused]] const T& value, [[maybe_unused]] std::source_location location = std::source_location::current()) {}
-
 #endif
 
 } // namespace rat
+
+namespace std {
+	template<glm::length_t L, typename T, glm::qualifier Q>
+	struct formatter<glm::vec<L, T, Q>> {
+		template<typename ParseContext>
+		constexpr auto parse(ParseContext& ctx) {
+			return ctx.begin();
+		}
+
+		template<typename FormatContext>
+		auto format(const glm::vec<L, T, Q>& v, FormatContext& ctx) const {
+			auto it = format_to(ctx.out(), "[");
+			for(glm::length_t i = 0; i < L; ++i) {
+				if constexpr(std::is_floating_point_v<T>) {
+					if(i == L - 1)
+						it = format_to(it, "{:.4f}", v[i]);
+					else
+						it = format_to(it, "{:.4f}, ", v[i]);
+				} else {
+					if(i == L - 1)
+						it = format_to(it, "{}", v[i]);
+					else
+						it = format_to(it, "{}, ", v[i]);
+				}
+			}
+			return format_to(it, "]");
+		}
+	};
+
+	template<glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
+	struct formatter<glm::mat<C, R, T, Q>> {
+		template<typename ParseContext>
+		constexpr auto parse(ParseContext& ctx) {
+			return ctx.begin();
+		}
+
+		template<typename FormatContext>
+		auto format(const glm::mat<C, R, T, Q>& m, FormatContext& ctx) const {
+			auto it = format_to(ctx.out(), "[");
+			for(glm::length_t i = 0; i < R; ++i) {
+				auto row = glm::row(m, i);
+				if(i == R - 1)
+					it = format_to(it, "{}", row);
+				else
+					it = format_to(it, "{}, ", row);
+			}
+			return format_to(it, "]");
+		}
+	};
+
+	template<typename T, glm::qualifier Q>
+	struct formatter<glm::qua<T, Q>> {
+		template<typename ParseContext>
+		constexpr auto parse(ParseContext& ctx) {
+			return ctx.begin();
+		}
+
+		template<typename FormatContext>
+		auto format(const glm::qua<T, Q>& q, FormatContext& ctx) const {
+			return format_to(ctx.out(), "{{w:{:.4f}, x:{:.4f}, y:{:.4f}, z:{:.4f}}}", q.w, q.x, q.y, q.z);
+		}
+	};
+} // namespace std

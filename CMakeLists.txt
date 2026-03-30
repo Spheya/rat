@@ -1,7 +1,8 @@
-﻿cmake_minimum_required(VERSION 3.22)
+﻿cmake_minimum_required(VERSION 3.25)
 project("rat")
 
 option(RAT_BUILD_EXAMPLES "Build example programs" ON)
+option(RAT_USE_IWYU "Use include-what-you-use" OFF)
 
 include(FetchContent)
 
@@ -47,43 +48,47 @@ target_include_directories(rat PUBLIC
 set_target_properties(rat PROPERTIES
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED ON
-    CXX_CLANG_TIDY clang-tidy
 )
 
 FetchContent_Declare(
     glfw
     GIT_REPOSITORY https://github.com/glfw/glfw
     GIT_TAG 3.4
+    SYSTEM
 )
 
 FetchContent_Declare(
     glm
     GIT_REPOSITORY https://github.com/g-truc/glm
     GIT_TAG 1.0.3
+    SYSTEM
 )
 
 FetchContent_Declare(
     tinyobjloader
     GIT_REPOSITORY https://github.com/tinyobjloader/tinyobjloader
     GIT_TAG v2.0.0rc13
+    SYSTEM
 )
 
 FetchContent_MakeAvailable(glfw glm tinyobjloader)
 
-add_subdirectory(external/glad)
-add_subdirectory(external/mikktspace)
-add_subdirectory(external/imgui)
-add_subdirectory(external/imguizmo)
+add_subdirectory(external/glad SYSTEM)
+add_subdirectory(external/mikktspace SYSTEM)
 
 target_link_libraries(rat
-    PUBLIC glm imgui imguizmo
+    PUBLIC glm
     PRIVATE glad glfw tinyobjloader mikktspace
 )
+
+if(RAT_USE_IWYU)
+    set_target_properties(rat PROPERTIES CXX_INCLUDE_WHAT_YOU_USE "include-what-you-use;-Xiwyu;--error;-Xiwyu;--mapping_file=${CMAKE_SOURCE_DIR}/iwyu.imp")
+endif()
 
 if(MSVC)
     target_compile_options(rat PRIVATE /W4 /WX)
 else()
-    target_compile_options(rat PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(rat PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
 if(RAT_BUILD_EXAMPLES)

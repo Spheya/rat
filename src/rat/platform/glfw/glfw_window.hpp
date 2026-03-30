@@ -1,5 +1,7 @@
 #pragma once
 
+#include <glm/glm.hpp>
+
 #include "rat/core/window.hpp"
 
 struct GLFWwindow;
@@ -9,19 +11,21 @@ namespace rat::glfw {
 	class Window final : public rat::Window {
 	public:
 		Window(GLFWwindow* window);
+		Window(Window&) = delete;
+		Window& operator=(Window&) = delete;
 		Window(Window&& other) noexcept;
 		Window& operator=(Window&& other) noexcept;
-		virtual ~Window();
+		~Window() override;
 
-		virtual glm::uvec2 getSize() const override;
-		virtual glm::ivec2 getPosition() const override;
+		[[nodiscard]] glm::uvec2 getSize() const override;
+		[[nodiscard]] glm::ivec2 getPosition() const override;
 
-		virtual const char* getTitle() const override;
-		virtual void setTitle(const char* title) override;
+		[[nodiscard]] const char* getTitle() const override;
+		void setTitle(const char* title) override;
 
-		virtual bool isCloseRequested() const override;
+		[[nodiscard]] bool isCloseRequested() const override;
 
-		bool isValid() const { return m_window; }
+		[[nodiscard]] bool isValid() const { return m_window; }
 
 	private:
 		GLFWwindow* m_window;
