@@ -1,12 +1,12 @@
 [
     { "include": ["@<glm/ext/.*>", "private", "<glm/glm.hpp>", "public"] },
     { "include": ["@<glm/detail/.*>", "private", "<glm/glm.hpp>", "public"] },
-    { "include": ["trigonometric.hpp", "private", "<glm/glm.hpp>", "public"] },
-    { "include": ["exponential.hpp", "private", "<glm/glm.hpp>", "public"] },
-    { "include": ["common.hpp", "private", "<glm/glm.hpp>", "public"] },
-    { "include": ["packing.hpp", "private", "<glm/glm.hpp>", "public"] },
-    { "include": ["geometric.hpp", "private", "<glm/glm.hpp>", "public"] },
-    { "include": ["matrix.hpp", "private", "<glm/glm.hpp>", "public"] },
-    { "include": ["vector_relational.hpp", "private", "<glm/glm.hpp>", "public"] },
-    { "include": ["integer.hpp", "private", "<glm/glm.hpp>", "public"] }
+    { "include": ["<glm/trigonometric.hpp>", "private", "<glm/glm.hpp>", "public"] },
+    { "include": ["<glm/exponential.hpp>", "private", "<glm/glm.hpp>", "public"] },
+    { "include": ["<glm/common.hpp>", "private", "<glm/glm.hpp>", "public"] },
+    { "include": ["<glm/packing.hpp>", "private", "<glm/glm.hpp>", "public"] },
+    { "include": ["<glm/geometric.hpp>", "private", "<glm/glm.hpp>", "public"] },
+    { "include": ["<glm/matrix.hpp>", "private", "<glm/glm.hpp>", "public"] },
+    { "include": ["<glm/vector_relational.hpp>", "private", "<glm/glm.hpp>", "public"] },
+    { "include": ["<glm/integer.hpp>", "private", "<glm/glm.hpp>", "public"] }
 ]
