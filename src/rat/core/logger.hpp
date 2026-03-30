@@ -2,9 +2,19 @@
 
 #include <format> // IWYU pragma: export
 #include <string_view>
+#include <type_traits>
 #include <utility>
 
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_access.hpp>
+
+namespace glm {
+	template<length_t L, typename T, qualifier Q>
+	struct vec;
+
+	template<length_t C, length_t R, typename T, qualifier Q>
+	struct mat;
+} // namespace glm
 
 namespace rat {
 
@@ -44,19 +54,65 @@ namespace rat {
 
 } // namespace rat
 
-template<glm::length_t L, typename T, glm::qualifier Q>
-struct std::formatter<glm::vec<L, T, Q>> {
-	template<typename ParseContext>
-	constexpr auto parse(ParseContext& ctx) {
-		return ctx.begin();
-	}
+namespace std {
+	template<glm::length_t L, typename T, glm::qualifier Q>
+	struct formatter<glm::vec<L, T, Q>> {
+		template<typename ParseContext>
+		constexpr auto parse(ParseContext& ctx) {
+			return ctx.begin();
+		}
 
-	template<typename FormatContext>
-	auto format(const glm::vec<L, T, Q>& v, FormatContext& ctx) const {
-		static_assert(L > 0 && L <= 4);
-		if constexpr(L == 1) return format_to(ctx.out(), "[ {} ]", v.x);
-		if constexpr(L == 2) return format_to(ctx.out(), "[ {}, {} ]", v.x, v.y);
-		if constexpr(L == 3) return format_to(ctx.out(), "[ {}, {}, {} ]", v.x, v.y, v.z);
-		if constexpr(L == 4) return format_to(ctx.out(), "[ {}, {}, {}, {} ]", v.x, v.y, v.z, v.w);
-	}
-};
+		template<typename FormatContext>
+		auto format(const glm::vec<L, T, Q>& v, FormatContext& ctx) const {
+			auto it = format_to(ctx.out(), "[");
+			for(glm::length_t i = 0; i < L; ++i) {
+				if constexpr(std::is_floating_point_v<T>) {
+					if(i == L - 1)
+						it = format_to(it, "{:.4f}", v[i]);
+					else
+						it = format_to(it, "{:.4f}, ", v[i]);
+				} else {
+					if(i == L - 1)
+						it = format_to(it, "{}", v[i]);
+					else
+						it = format_to(it, "{}, ", v[i]);
+				}
+			}
+			return format_to(it, "]");
+		}
+	};
+
+	template<glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
+	struct formatter<glm::mat<C, R, T, Q>> {
+		template<typename ParseContext>
+		constexpr auto parse(ParseContext& ctx) {
+			return ctx.begin();
+		}
+
+		template<typename FormatContext>
+		auto format(const glm::mat<C, R, T, Q>& m, FormatContext& ctx) const {
+			auto it = format_to(ctx.out(), "[");
+			for(glm::length_t i = 0; i < R; ++i) {
+				auto row = glm::row(m, i);
+				if(i == R - 1)
+					it = format_to(it, "{}", row);
+				else
+					it = format_to(it, "{}, ", row);
+			}
+			return format_to(it, "]");
+		}
+	};
+
+	template<typename T, glm::qualifier Q>
+	struct formatter<glm::qua<T, Q>> {
+		template<typename ParseContext>
+		constexpr auto parse(ParseContext& ctx) {
+			return ctx.begin();
+		}
+
+		template<typename FormatContext>
+		auto format(const glm::qua<T, Q>& q, FormatContext& ctx) const {
+			return format_to(ctx.out(), "{{w:{:.4f}, x:{:.4f}, y:{:.4f}, z:{:.4f}}}", q.w, q.x, q.y, q.z);
+		}
+	};
+} // namespace std
