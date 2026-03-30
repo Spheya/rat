@@ -82,7 +82,7 @@ target_link_libraries(rat
 )
 
 if(RAT_USE_IWYU)
-    set_target_properties(rat PROPERTIES CXX_INCLUDE_WHAT_YOU_USE "include-what-you-use;-Xiwyu;--error;-Xiwyu;--mapping_file=${CMAKE_SOURCE_DIR}/iwyu.imp;-Xiwyu;--ignore=*.inl")
+    set_target_properties(rat PROPERTIES CXX_INCLUDE_WHAT_YOU_USE "include-what-you-use;-Xiwyu;--error;-Xiwyu;--mapping_file=${CMAKE_SOURCE_DIR}/iwyu.imp;-Xiwyu;--ignore=.*\.inl")
 endif()
 
 if(MSVC)
