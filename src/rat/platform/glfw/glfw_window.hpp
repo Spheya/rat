@@ -1,5 +1,7 @@
 #pragma once
 
+#include <glm/glm.hpp>
+
 #include "rat/core/window.hpp"
 
 struct GLFWwindow;

@@ -1,9 +1,11 @@
 #include "mesh_loader.hpp"
 
-#include <sstream>
+#include <string>
 #include <unordered_map>
+#include <utility>
 
 #define TINYOBJLOADER_IMPLEMENTATION
+#include <glm/glm.hpp>
 #include <mikktspace.h>
 #include <tiny_obj_loader.h>
 

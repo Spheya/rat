@@ -4,7 +4,6 @@
 #include <string_view>
 #include <utility>
 
-#include <glm/detail/qualifier.hpp>
 #include <glm/glm.hpp>
 
 namespace rat {
