@@ -4,6 +4,9 @@
 #include <string_view>
 #include <utility>
 
+#include <glm/detail/qualifier.hpp>
+#include <glm/glm.hpp>
+
 namespace rat {
 
 	enum class LogLevel { Log, Warn, Error };
@@ -41,3 +44,20 @@ namespace rat {
 #endif
 
 } // namespace rat
+
+template<glm::length_t L, typename T, glm::qualifier Q>
+struct std::formatter<glm::vec<L, T, Q>> {
+	template<typename ParseContext>
+	constexpr auto parse(ParseContext& ctx) {
+		return ctx.begin();
+	}
+
+	template<typename FormatContext>
+	auto format(const glm::vec<L, T, Q>& v, FormatContext& ctx) const {
+		static_assert(L > 0 && L <= 4);
+		if constexpr(L == 1) return format_to(ctx.out(), "[ {} ]", v.x);
+		if constexpr(L == 2) return format_to(ctx.out(), "[ {}, {} ]", v.x, v.y);
+		if constexpr(L == 3) return format_to(ctx.out(), "[ {}, {}, {} ]", v.x, v.y, v.z);
+		if constexpr(L == 4) return format_to(ctx.out(), "[ {}, {}, {}, {} ]", v.x, v.y, v.z, v.w);
+	}
+};

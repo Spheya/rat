@@ -1,8 +1,9 @@
 #pragma once
 
+#include <glm/glm.hpp>
+
 #include "interface/mesh.hpp"
 #include "material.hpp"
-#include "rat/core/math.hpp"
 
 namespace rat {
 

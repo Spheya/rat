@@ -7,7 +7,9 @@
 int main() {
 	rat::printRat();
 
-	rat::log("hi");
+	glm::vec3 v(1.0f, 2.53f, -8.0f);
+
+	rat::log("{}", v);
 	rat::warn("hi");
 	rat::error("hi");
 }

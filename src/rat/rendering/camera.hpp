@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rat/core/math.hpp"
+#include <glm/glm.hpp>
 
 namespace rat {
 
