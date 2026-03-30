@@ -9,4 +9,6 @@
     { "include": ["<glm/matrix.hpp>", "private", "<glm/glm.hpp>", "public"] },
     { "include": ["<glm/vector_relational.hpp>", "private", "<glm/glm.hpp>", "public"] },
     { "include": ["<glm/integer.hpp>", "private", "<glm/glm.hpp>", "public"] }
+    
+    { "symbol": ["std::hash", "private", "<functional>", "public"] }
 ]
