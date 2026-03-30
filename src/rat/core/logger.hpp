@@ -2,7 +2,6 @@
 
 #include <format> // IWYU pragma: export
 #include <string_view>
-#include <type_traits>
 #include <utility>
 
 #include <glm/glm.hpp>
@@ -11,9 +10,10 @@
 namespace glm {
 	template<length_t L, typename T, qualifier Q>
 	struct vec;
-
 	template<length_t C, length_t R, typename T, qualifier Q>
 	struct mat;
+	template<typename T, qualifier Q>
+	struct qua;
 } // namespace glm
 
 namespace rat {
