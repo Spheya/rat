@@ -1,0 +1,3 @@
+[
+    { "include": ["@<glm/ext/.*>", "private", "<glm/glm.hpp>", "public"] }
+]
