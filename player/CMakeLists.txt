@@ -1,4 +1,4 @@
-add_executable(ratplayer main.cpp)
+add_executable(ratplayer "main.cpp")
 
 target_link_libraries(ratplayer PRIVATE ratengine)
 
