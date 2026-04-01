@@ -1,6 +1,6 @@
-add_executable(rateditor "src/main.cpp" "src/loader/mesh_loader.cpp" "src/loader/mesh_loader.hpp")
+add_executable(rateditor "src/main.cpp" "src/loader/mesh_loader.cpp")
 
-target_link_libraries(rateditor PRIVATE ratengine mikktspac)
+target_link_libraries(rateditor PRIVATE ratengine mikktspace tinyobjloader)
 
 set_property(TARGET rateditor PROPERTY OUTPUT_NAME "rat")
 set_property(TARGET rateditor PROPERTY CXX_STANDARD 20)
