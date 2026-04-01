@@ -6,91 +6,34 @@ option(RAT_USE_IWYU "Use include-what-you-use" OFF)
 
 include(FetchContent)
 
-add_library(rat)
-add_library(rat::rat ALIAS rat)
-
-file(GLOB_RECURSE CORE_HEADERS ./src/rat/core/*.hpp)
-file(GLOB_RECURSE CORE_SOURCES ./src/rat/core/*.cpp)
-file(GLOB_RECURSE RENDERING_HEADERS ./src/rat/rendering/*.hpp)
-file(GLOB_RECURSE RENDERING_SOURCES ./src/rat/rendering/*.cpp)
-file(GLOB_RECURSE LOADER_HEADERS ./src/rat/loader/*.hpp)
-file(GLOB_RECURSE LOADER_SOURCES ./src/rat/loader/*.cpp)
-file(GLOB_RECURSE PLATFORM_GLFW_HEADERS ./src/rat/platform/glfw/*.hpp)
-file(GLOB_RECURSE PLATFORM_GLFW_SOURCES ./src/rat/platform/glfw/*.cpp)
-file(GLOB_RECURSE PLATFORM_OPENGL_HEADERS ./src/rat/platform/opengl/*.hpp)
-file(GLOB_RECURSE PLATFORM_OPENGL_SOURCES ./src/rat/platform/opengl/*.cpp)
-
-source_group("Header Files/Core" FILES ${CORE_HEADERS})
-source_group("Source Files/Core" FILES ${CORE_SOURCES})
-source_group("Header Files/Rendering" FILES ${RENDERING_HEADERS})
-source_group("Source Files/Rendering" FILES ${RENDERING_SOURCES})
-source_group("Header Files/Loader" FILES ${LOADER_HEADERS})
-source_group("Source Files/Loader" FILES ${LOADER_SOURCES})
-source_group("Header Files/Platform/GLFW" FILES ${PLATFORM_GLFW_HEADERS})
-source_group("Source Files/Platform/GLFW" FILES ${PLATFORM_GLFW_SOURCES})
-source_group("Header Files/Platform/OpenGL" FILES ${PLATFORM_OPENGL_HEADERS})
-source_group("Source Files/Platform/OpenGL" FILES ${PLATFORM_OPENGL_SOURCES})
-
-target_sources(rat PRIVATE 
-    ${CORE_HEADERS} ${CORE_SOURCES}
-    ${RENDERING_HEADERS} ${RENDERING_SOURCES}
-    ${PLATFORM_GLFW_HEADERS} ${PLATFORM_GLFW_SOURCES}
-    ${PLATFORM_OPENGL_HEADERS} ${PLATFORM_OPENGL_SOURCES}
-    ${LOADER_HEADERS} ${LOADER_SOURCES}
-)
-
-target_include_directories(rat PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
-    $<INSTALL_INTERFACE:src>
-)
-
-set_target_properties(rat PROPERTIES
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED ON
-)
+set(GLFW_INSTALL OFF CACHE BOOL OFF FORCE)
+set(GLFW_DOCS OFF CACHE BOOL OFF FORCE)
 
 FetchContent_Declare(
-    glfw
-    GIT_REPOSITORY https://github.com/glfw/glfw
-    GIT_TAG 3.4
-    SYSTEM
-)
+  glfw
+  GIT_REPOSITORY https://github.com/glfw/glfw
+  GIT_TAG 3.4
+  SYSTEM EXCLUDE_FROM_ALL)
 
 FetchContent_Declare(
-    glm
-    GIT_REPOSITORY https://github.com/g-truc/glm
-    GIT_TAG 1.0.3
-    SYSTEM
-)
+  glm
+  GIT_REPOSITORY https://github.com/g-truc/glm
+  GIT_TAG 1.0.3
+  SYSTEM EXCLUDE_FROM_ALL)
 
 FetchContent_Declare(
-    tinyobjloader
-    GIT_REPOSITORY https://github.com/tinyobjloader/tinyobjloader
-    GIT_TAG v2.0.0rc13
-    SYSTEM
-)
+  tinyobjloader
+  GIT_REPOSITORY https://github.com/tinyobjloader/tinyobjloader
+  GIT_TAG v2.0.0rc13
+  SYSTEM EXCLUDE_FROM_ALL)
 
 FetchContent_MakeAvailable(glfw glm tinyobjloader)
+add_subdirectory(external/glad SYSTEM EXCLUDE_FROM_ALL)
+add_subdirectory(external/mikktspace SYSTEM EXCLUDE_FROM_ALL)
 
-add_subdirectory(external/glad SYSTEM)
-add_subdirectory(external/mikktspace SYSTEM)
+add_subdirectory(engine)
+add_subdirectory(editor)
+add_subdirectory(player)
 
-target_link_libraries(rat
-    PUBLIC glm
-    PRIVATE glad glfw tinyobjloader mikktspace
-)
-
-if(RAT_USE_IWYU)
-    set_target_properties(rat PROPERTIES CXX_INCLUDE_WHAT_YOU_USE "include-what-you-use;-Xiwyu;--error;-Xiwyu;--mapping_file=${CMAKE_SOURCE_DIR}/iwyu.imp")
-endif()
-
-if(MSVC)
-    target_compile_options(rat PRIVATE /W4 /WX)
-else()
-    target_compile_options(rat PRIVATE -Wall -Wextra -Wpedantic)
-endif()
-
-if(RAT_BUILD_EXAMPLES)
-    add_subdirectory(example)
-endif()
+# Todo: do a proper install instead of just building the executables
+install(TARGETS rateditor ratplayer RUNTIME DESTINATION bin)
