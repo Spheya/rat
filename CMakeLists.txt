@@ -35,5 +35,5 @@ add_subdirectory(engine)
 add_subdirectory(editor)
 add_subdirectory(player)
 
-# Todo: do a proper install instead of just building the executables
+# Todo: do a proper install instead of just exporting the executables
 install(TARGETS rateditor ratplayer RUNTIME DESTINATION bin)
