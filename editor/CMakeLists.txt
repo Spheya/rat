@@ -1,18 +1,17 @@
-add_executable(rateditor "src/main.cpp" "src/loader/mesh_loader.cpp")
+add_library(rateditor SHARED)
+add_library(rat::editor ALIAS rateditor)
+set_target_properties(rateditor PROPERTIES EXPORT_NAME editor)
+init_rat_target(rateditor)
 
-target_link_libraries(rateditor PRIVATE ratengine mikktspace tinyobjloader)
+target_sources(rateditor
+  PUBLIC 
+    FILE_SET HEADERS
+    BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}
+    FILES rat/editor/api.hpp rat/editor/editor.hpp
+  PRIVATE
+    rat/editor/editor.cpp
+)
+target_include_directories(rateditor PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> $<INSTALL_INTERFACE:include>)
+target_compile_definitions(rateditor PUBLIC RAT_EDITOR PRIVATE RAT_EDITOR_EXPORT)
 
-set_property(TARGET rateditor PROPERTY OUTPUT_NAME "rat")
 set_property(TARGET rateditor PROPERTY CXX_STANDARD 20)
-target_compile_definitions(rateditor PRIVATE $<$<CONFIG:Release>:NDEBUG>)
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-  target_compile_options(rateditor PRIVATE -Wall -Wextra -Wpedantic)
-endif()
-if(RAT_USE_IWYU)
-  set_target_properties(
-    rateditor
-    PROPERTIES
-      CXX_INCLUDE_WHAT_YOU_USE
-      "include-what-you-use;-Xiwyu;--error;-Xiwyu;--mapping_file=${CMAKE_SOURCE_DIR}/iwyu.imp"
-  )
-endif()
