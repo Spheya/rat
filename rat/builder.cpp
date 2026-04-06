@@ -21,6 +21,9 @@ static bool createCMakeLists(const std::filesystem::path& buildDir, std::span<co
 	outFile << "#################################################\n";
 	outFile << "cmake_minimum_required(VERSION 3.25)\n";
 	outFile << "project(ratengine)\n";
+	outFile << "\n";
+	outFile << "option(RAT_BUILD_EDITOR \"Build the project to be attached to the editor\" OFF)\n";
+	outFile << "\n";
 	outFile << "find_package(rat)\n";
 	outFile << "\n";
 	outFile << "if(RAT_BUILD_EDITOR)\n";
