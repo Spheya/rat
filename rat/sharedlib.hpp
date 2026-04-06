@@ -41,7 +41,7 @@ inline SharedLib OpenLibrary(const std::filesystem::path& path) {
 template<typename T>
 inline T* GetSymbol(SharedLib lib, const char* symb) {
 #ifdef LIBWRAP_NIX
-	return reinterpret_cast<T*>(dlysm(lib, symb));
+	return reinterpret_cast<T*>(dlsym(lib, symb));
 #else
 	return reinterpret_cast<T*>(GetProcAddress(lib, symb));
 #endif

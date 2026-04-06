@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <fstream>
 #include <span>
+#include <vector>
 
 #include "command.hpp"
 #include "sharedlib.hpp"

@@ -2,6 +2,8 @@
 
 #include <iostream>
 
-void runEditor() {
+#include "api.hpp"
+
+RAT_EDITOR_API void runEditor() {
 	std::cout << "Editor Layer\n";
 }
