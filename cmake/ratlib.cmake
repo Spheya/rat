@@ -19,7 +19,8 @@ function(init_rat_target name)
       -Wno-c++17-compat-pedantic
       -Wno-c++20-compat-pedantic
       -Wno-c99-compat
-      -Wno-unsafe-buffer-usage
+      -Wno-unsafe-buffer-usage   # it's stupid
+      -Wno-unused-macros         # seems to be incorrect sometimes?
       -fdiagnostics-show-template-tree
       -fdiagnostics-show-option
       -fdiagnostics-show-category=name

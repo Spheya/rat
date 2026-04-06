@@ -33,7 +33,7 @@ jobs:
           cmake --build build --parallel $(nproc)
       - uses: actions/upload-artifact@v7
         with:
-          name: build-linux-${{ matrix.preset }}
+          name: Linux${{ matrix.preset }}
           path: build/
           retention-days: 1
 
@@ -50,7 +50,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v8
         with:
-          name: build-linux-${{ matrix.preset }}
+          name: Linux${{ matrix.preset }}
           path: build/
       - uses: cpp-linter/cpp-linter-action@v2
         id: linter
@@ -63,6 +63,6 @@ jobs:
           database: 'build'
           step-summary: true
           files-changed-only: true
-          ignore: 'external|build'
+          ignore: 'build|engine'
       - if: steps.linter.outputs.checks-failed > 0
         run: exit 1

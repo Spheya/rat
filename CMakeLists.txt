@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.25)
+﻿cmake_minimum_required(VERSION 3.25)
 project(rat)
 
 include(CMakePackageConfigHelpers)
@@ -39,7 +39,7 @@ install(
   FILES
   ${CMAKE_CURRENT_BINARY_DIR}/ratConfig.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/ratConfigVersion.cmake
-  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/extension.cmake
+  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ratlib.cmake
   DESTINATION cmake
 )
 

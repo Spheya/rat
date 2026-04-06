@@ -1,11 +1,15 @@
 #include "builder.hpp"
 
+#include <algorithm>
 #include <filesystem>
+#include <format>
 #include <fstream>
 #include <span>
+#include <string>
+#include <vector>
 
 #include "command.hpp"
-#include "engine.hpp"
+#include "sharedlib.hpp"
 
 static bool createCMakeLists(const std::filesystem::path& buildDir, std::span<const std::filesystem::path> extensions) {
 	std::ofstream outFile(buildDir / "CMakeLists.txt");
@@ -52,7 +56,7 @@ static bool createEngineMain(const std::filesystem::path& buildDir, std::span<co
 	outFile << "\t#ifdef _WIN32\n";
 	outFile << "\t\t#define RAT_EXPORT __declspec(dllexport)\n";
 	outFile << "\t#else\n";
-	outFile << "\t\t#if __GNUC__ >= 4\n";
+	outFile << "\t\t#if defined(__GNUC__) && __GNUC__ >= 4\n";
 	outFile << "\t\t\t#define RAT_EXPORT __attribute__((visibility(\"default\")))\n";
 	outFile << "\t\t#else\n";
 	outFile << "\t\t\t#define RAT_EXPORT\n";
@@ -83,15 +87,21 @@ static std::vector<std::filesystem::path> loadExtensions(const std::filesystem::
 }
 
 bool linkEngine(const char* projectPath) {
+#ifdef _WIN32
+	const char* engineName = "ratengine.dll";
+#else
+	const char* engineName = "libratengine.so";
+#endif
+
 	std::filesystem::path projPath(projectPath);
 	if(!projPath.has_parent_path()) return false;
 	std::filesystem::path root = projPath.parent_path();
-	std::filesystem::path enginePath = root / ".rat" / "ratengine.dll";
+	std::filesystem::path enginePath = root / ".rat" / engineName;
 
-	SharedLib engine(enginePath);
+	SharedLib engine = OpenLibrary(enginePath);
 	if(!engine) return false;
 
-	auto main = engine.getFunction<void()>("ratEngineMain");
+	auto main = GetSymbol<void()>(engine, "ratEngineMain");
 	if(!main) return false;
 	main();
 
