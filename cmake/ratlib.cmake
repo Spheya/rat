@@ -10,7 +10,7 @@ endfunction()
 
 function(init_rat_target name)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    target_compile_options(rat PRIVATE
+    target_compile_options(${name} PRIVATE
       -Weverything
       -Wno-c++98-c++11-c++14-c++17-compat-pedantic
       -Wno-c++98-compat-pedantic
@@ -27,6 +27,7 @@ function(init_rat_target name)
     )
   endif()
   if(RAT_USE_IWYU)
-    set_target_properties(rat PROPERTIES CXX_INCLUDE_WHAT_YOU_USE "include-what-you-use;-Xiwyu;--error;-Xiwyu;--mapping_file=${CMAKE_SOURCE_DIR}/iwyu.imp")
-  endif()
+    set_target_properties(${name} PROPERTIES CXX_INCLUDE_WHAT_YOU_USE "include-what-you-use;-Xiwyu;--error;-Xiwyu;--mapping_file=${CMAKE_SOURCE_DIR}/iwyu.imp")
+  endif()  
+  target_compile_definitions(${name} PRIVATE $<$<CONFIG:Release>:NDEBUG>)
 endfunction()
