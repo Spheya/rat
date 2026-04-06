@@ -4,8 +4,6 @@
 #include <fstream>
 #include <span>
 
-#include "command.hpp"
-
 static bool createCMakeLists(const std::filesystem::path& buildDir, std::span<const std::filesystem::path> extensions) {
 	std::ofstream outFile(buildDir / "CMakeLists.txt");
 	if(!outFile.is_open()) return false;
@@ -85,27 +83,18 @@ bool linkEngine(const char* /*projectPath*/) {
 	return true;
 }
 
-bool buildEngine(const char* projectPath, bool editor) {
+bool buildEngine(const char* projectPath, bool /*editor*/) {
 	std::filesystem::path projPath(projectPath);
 	if(!projPath.has_parent_path()) return false;
 
 	std::filesystem::path root = projPath.parent_path();
 	std::filesystem::path ratDir = root / ".rat";
-	std::filesystem::path buildDir = ratDir / (editor ? "build" : "export");
 	std::vector<std::filesystem::path> extensions = loadExtensions(root);
 
 	std::filesystem::create_directories(ratDir);
 
 	if(!createCMakeLists(ratDir, extensions)) return false;
 	if(!createEngineMain(ratDir, extensions)) return false;
-
-	runCommand(
-	    R"(cmake "{}" -B "{}" -G Ninja -DRAT_BUILD_EDITOR={} -DCMAKE_EXPORT_COMPILE_COMMANDS=ON)",
-	    ratDir.generic_string(),
-	    buildDir.generic_string(),
-	    editor ? "ON" : "OFF"
-	);
-	runCommand(R"(cmake --build "{}")", buildDir.generic_string());
 
 	return true;
 }
