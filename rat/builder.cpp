@@ -4,6 +4,9 @@
 #include <fstream>
 #include <span>
 
+#include "command.hpp"
+#include "sharedlib.hpp"
+
 static bool createCMakeLists(const std::filesystem::path& buildDir, std::span<const std::filesystem::path> extensions) {
 	std::ofstream outFile(buildDir / "CMakeLists.txt");
 	if(!outFile.is_open()) return false;
@@ -49,7 +52,7 @@ static bool createEngineMain(const std::filesystem::path& buildDir, std::span<co
 	outFile << "\t#ifdef _WIN32\n";
 	outFile << "\t\t#define RAT_EXPORT __declspec(dllexport)\n";
 	outFile << "\t#else\n";
-	outFile << "\t\t#if __GNUC__ >= 4\n";
+	outFile << "\t\t#if defined(__GNUC__) && __GNUC__ >= 4\n";
 	outFile << "\t\t\t#define RAT_EXPORT __attribute__((visibility(\"default\")))\n";
 	outFile << "\t\t#else\n";
 	outFile << "\t\t\t#define RAT_EXPORT\n";
@@ -79,22 +82,49 @@ static std::vector<std::filesystem::path> loadExtensions(const std::filesystem::
 	return extensions;
 }
 
-bool linkEngine(const char* /*projectPath*/) {
+bool linkEngine(const char* projectPath) {
+#ifdef _WIN32
+	const char* engineName = "ratengine.dll";
+#else
+	const char* engineName = "libratengine.so";
+#endif
+
+	std::filesystem::path projPath(projectPath);
+	if(!projPath.has_parent_path()) return false;
+	std::filesystem::path root = projPath.parent_path();
+	std::filesystem::path enginePath = root / ".rat" / engineName;
+
+	SharedLib engine = OpenLibrary(enginePath);
+	if(!engine) return false;
+
+	auto main = GetSymbol<void()>(engine, "ratEngineMain");
+	if(!main) return false;
+	main();
+
 	return true;
 }
 
-bool buildEngine(const char* projectPath, bool /*editor*/) {
+bool buildEngine(const char* projectPath, bool editor) {
 	std::filesystem::path projPath(projectPath);
 	if(!projPath.has_parent_path()) return false;
 
 	std::filesystem::path root = projPath.parent_path();
 	std::filesystem::path ratDir = root / ".rat";
+	std::filesystem::path buildDir = ratDir / (editor ? "build" : "export");
 	std::vector<std::filesystem::path> extensions = loadExtensions(root);
 
 	std::filesystem::create_directories(ratDir);
 
 	if(!createCMakeLists(ratDir, extensions)) return false;
 	if(!createEngineMain(ratDir, extensions)) return false;
+
+	runCommand(
+	    R"(cmake "{}" -B "{}" -G Ninja -DRAT_BUILD_EDITOR={} -DCMAKE_EXPORT_COMPILE_COMMANDS=ON)",
+	    ratDir.generic_string(),
+	    buildDir.generic_string(),
+	    editor ? "ON" : "OFF"
+	);
+	runCommand(R"(cmake --build "{}")", buildDir.generic_string());
 
 	return true;
 }
