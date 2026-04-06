@@ -5,7 +5,7 @@
 #include <span>
 
 #include "command.hpp"
-#include "engine.hpp"
+#include "sharedlib.hpp"
 
 static bool createCMakeLists(const std::filesystem::path& buildDir, std::span<const std::filesystem::path> extensions) {
 	std::ofstream outFile(buildDir / "CMakeLists.txt");
@@ -88,10 +88,10 @@ bool linkEngine(const char* projectPath) {
 	std::filesystem::path root = projPath.parent_path();
 	std::filesystem::path enginePath = root / ".rat" / "ratengine.dll";
 
-	SharedLib engine(enginePath);
+	SharedLib engine = OpenLibrary(enginePath);
 	if(!engine) return false;
 
-	auto main = engine.getFunction<void()>("ratEngineMain");
+	auto main = GetSymbol<void()>(engine, "ratEngineMain");
 	if(!main) return false;
 	main();
 

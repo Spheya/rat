@@ -20,6 +20,9 @@ function(init_rat_target name)
       -Wno-c++20-compat-pedantic
       -Wno-c99-compat
       -Wno-unsafe-buffer-usage
+      -fdiagnostics-show-template-tree
+      -fdiagnostics-show-option
+      -fdiagnostics-show-category=name
       -fvisibility=hidden
     )
   endif()

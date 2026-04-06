@@ -29,7 +29,6 @@ jobs:
             -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
             -DCMAKE_CXX_FLAGS="-Werror" \
             -DRAT_USE_IWYU=ON \
-            -G Ninja \
             -B build
           cmake --build build --parallel $(nproc)
       - uses: actions/upload-artifact@v7
