@@ -3,6 +3,13 @@ add_library(rat::core ALIAS ratcore)
 set_target_properties(ratcore PROPERTIES EXPORT_NAME core)
 init_rat_target(ratcore)
 
+if(RAT_BUILD_EDITOR)
+  target_link_libraries(ratcore PRIVATE rat::editor)
+  target_compile_definitions(ratcore PRIVATE RAT_EDITOR)
+else()
+  target_link_libraries(ratcore PRIVATE glfw)
+endif()
+
 target_sources(ratcore
   PUBLIC 
     FILE_SET HEADERS

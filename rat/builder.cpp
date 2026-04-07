@@ -24,20 +24,23 @@ static bool createCMakeLists(const std::filesystem::path& buildDir, std::span<co
 	outFile << "\n";
 	outFile << "option(RAT_BUILD_EDITOR \"Build the project to be attached to the editor\" OFF)\n";
 	outFile << "\n";
-	outFile << "find_package(rat)\n";
-	outFile << "\n";
-	outFile << "if(RAT_BUILD_EDITOR)\n";
-	outFile << "  add_library(ratengine SHARED .rat/main.cpp)\n";
-	outFile << "  target_compile_definitions(ratengine PUBLIC RAT_EDITOR)\n";
-	outFile << "else()\n";
-	outFile << "  add_executable(ratengine .rat/main.cpp)\n";
+	outFile << "if(NOT TARGET rat::core)\n";
+	outFile << "\tfind_package(rat)\n";
 	outFile << "endif()\n";
 	outFile << "\n";
-	outFile << "add_custom_command(\n";
-	outFile << "  TARGET ratengine\n";
-	outFile << "  POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:ratengine> ${CMAKE_CURRENT_SOURCE_DIR}/.rat\n";
-	outFile << "  VERBATIM\n";
-	outFile << ")\n";
+	outFile << "if(RAT_BUILD_EDITOR)\n";
+	outFile << "  add_library(ratengine SHARED main.cpp)\n";
+	outFile << "  target_compile_definitions(ratengine PUBLIC RAT_EDITOR)\n";
+	outFile << "  add_custom_command(\n";
+	outFile << "    TARGET ratengine\n";
+	outFile << "    POST_BUILD\n";
+	outFile << "      COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:ratengine> ${CMAKE_CURRENT_SOURCE_DIR}\n";
+	outFile << "      COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_PDB_FILE:ratengine> ${CMAKE_CURRENT_SOURCE_DIR}\n";
+	outFile << "    VERBATIM\n";
+	outFile << "  )\n";
+	outFile << "else()\n";
+	outFile << "  add_executable(ratengine main.cpp)\n";
+	outFile << "endif()\n";
 	outFile << "\n";
 	for(const auto& extension : extensions)
 		outFile << "add_subdirectory(" << std::filesystem::relative(extension, buildDir).generic_string() << " ${CMAKE_BINARY_DIR}/"
@@ -71,6 +74,8 @@ static bool createEngineMain(const std::filesystem::path& buildDir, std::span<co
 	outFile << "\n";
 	for(const auto& extension : extensions) outFile << "void " << extension.filename().string() << "Init();\n";
 	outFile << "\n";
+	outFile << "extern \"C\" RAT_EXPORT int ratEngineMain(); \n";
+	outFile << "\n";
 	outFile << "extern \"C\" RAT_EXPORT int ratEngineMain() {\n";
 	for(const auto& extension : extensions) outFile << "\t" << extension.filename().string() << "Init();\n";
 	outFile << "\treturn 0;\n";
@@ -84,8 +89,10 @@ static bool createEngineMain(const std::filesystem::path& buildDir, std::span<co
 
 static std::vector<std::filesystem::path> loadExtensions(const std::filesystem::path& root) {
 	std::vector<std::filesystem::path> extensions;
-	for(const auto& entry : std::filesystem::directory_iterator(root / "extensions"))
-		if(entry.is_directory()) extensions.emplace_back(entry.path());
+	std::filesystem::path extensionsDir = root / "extensions";
+	if(std::filesystem::exists(extensionsDir))
+		for(const auto& entry : std::filesystem::directory_iterator(extensionsDir))
+			if(entry.is_directory()) extensions.emplace_back(entry.path());
 	return extensions;
 }
 
@@ -118,7 +125,7 @@ bool generateBuildFiles(const char* projectPath) {
 	std::filesystem::path ratDir = root / ".rat";
 	std::vector<std::filesystem::path> extensions = loadExtensions(root);
 	std::filesystem::create_directories(ratDir);
-	if(!createCMakeLists(root, extensions)) return false;
+	if(!createCMakeLists(ratDir, extensions)) return false;
 	if(!createEngineMain(ratDir, extensions)) return false;
 	return true;
 }
@@ -130,13 +137,16 @@ bool buildEngine(const char* projectPath, bool editor) {
 	std::filesystem::path ratDir = root / ".rat";
 	std::filesystem::path buildDir = ratDir / (editor ? "build" : "export");
 
+	std::filesystem::path cmakeProjDir = ratDir;
+	if(std::filesystem::exists(root / "CMakeLists.txt")) cmakeProjDir = root;
+
 	runCommand(
 	    R"(cmake "{}" -B "{}" -G Ninja -DRAT_BUILD_EDITOR={} -DCMAKE_EXPORT_COMPILE_COMMANDS=ON)",
-	    root.generic_string(),
+	    cmakeProjDir.generic_string(),
 	    buildDir.generic_string(),
 	    editor ? "ON" : "OFF"
 	);
-	runCommand(R"(cmake --build "{}")", buildDir.generic_string());
+	runCommand(R"(cmake --build "{}" --target ratengine)", buildDir.generic_string());
 
 	return true;
 }

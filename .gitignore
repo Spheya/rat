@@ -3,5 +3,7 @@
 .cache/
 .clangd
 
-/out/
-/build/
+out/
+build/
+
+.rat/

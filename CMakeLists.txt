@@ -6,6 +6,7 @@ include(cmake/ratlib.cmake)
 
 add_subdirectory(rat)
 add_subdirectory(editor)
+add_subdirectory(engine)
 
 install(
   TARGETS rateditor rat
