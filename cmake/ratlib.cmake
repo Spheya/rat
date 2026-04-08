@@ -3,7 +3,6 @@ function(add_rat_extension name)
   target_link_libraries(ratengine PRIVATE ${name})
   target_link_libraries(${name} PRIVATE rat::core)
   if(RAT_BUILD_EDITOR)
-    target_link_libraries(${name} PRIVATE rat::editor)
     target_compile_definitions(${name} PRIVATE RAT_EDITOR)
   endif()
 endfunction()
@@ -21,6 +20,7 @@ function(init_rat_target name)
       -Wno-c99-compat
       -Wno-unsafe-buffer-usage   # it's stupid
       -Wno-unused-macros         # seems to be incorrect sometimes?
+      -Wno-padded                # I don't really care about this
       -fdiagnostics-show-template-tree
       -fdiagnostics-show-option
       -fdiagnostics-show-category=name
@@ -28,7 +28,11 @@ function(init_rat_target name)
     )
   endif()
   if(RAT_USE_IWYU)
-    set_target_properties(${name} PROPERTIES CXX_INCLUDE_WHAT_YOU_USE "include-what-you-use;-Xiwyu;--error;-Xiwyu;--mapping_file=${CMAKE_SOURCE_DIR}/iwyu.imp")
+    set_property(TARGET ${name} PROPERTY CXX_INCLUDE_WHAT_YOU_USE "include-what-you-use;-Xiwyu;--error;-Xiwyu;--mapping_file=${CMAKE_SOURCE_DIR}/iwyu.imp")
   endif()  
   target_compile_definitions(${name} PRIVATE $<$<CONFIG:Release>:NDEBUG>)
+  set_property(TARGET ${name} PROPERTY CXX_STANDARD 20)
+  if(WIN32)
+    target_compile_definitions(${name} PRIVATE UNICODE)
+  endif()
 endfunction()

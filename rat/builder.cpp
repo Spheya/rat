@@ -58,6 +58,8 @@ static bool createEngineMain(const std::filesystem::path& buildDir, std::span<co
 	outFile << "// Any changes will be discarded               //\n";
 	outFile << "/////////////////////////////////////////////////\n";
 	outFile << "\n";
+	outFile << "#include <rat/engine.hpp>\n";
+	outFile << "\n";
 	outFile << "#ifdef RAT_EDITOR\n";
 	outFile << "\t#ifdef _WIN32\n";
 	outFile << "\t\t#define RAT_EXPORT __declspec(dllexport)\n";
@@ -77,7 +79,10 @@ static bool createEngineMain(const std::filesystem::path& buildDir, std::span<co
 	outFile << "extern \"C\" RAT_EXPORT int ratEngineMain(); \n";
 	outFile << "\n";
 	outFile << "extern \"C\" RAT_EXPORT int ratEngineMain() {\n";
+	outFile << "\trat::Engine::initialize();\n";
 	for(const auto& extension : extensions) outFile << "\t" << extension.filename().string() << "Init();\n";
+	outFile << "\trat::Engine::getInstance().run();\n";
+	outFile << "\trat::Engine::terminate();\n";
 	outFile << "\treturn 0;\n";
 	outFile << "}\n";
 	outFile << "\n";

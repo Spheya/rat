@@ -5,11 +5,10 @@ include(CMakePackageConfigHelpers)
 include(cmake/ratlib.cmake)
 
 add_subdirectory(rat)
-add_subdirectory(editor)
 add_subdirectory(engine)
 
 install(
-  TARGETS rateditor rat
+  TARGETS rat
   EXPORT rat-targets
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
@@ -44,4 +43,13 @@ install(
   DESTINATION cmake
 )
 
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/engine/ DESTINATION src)
+install(
+  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/engine/
+  DESTINATION src
+  PATTERN "*/.github" EXCLUDE
+  PATTERN "*/doc" EXCLUDE
+  PATTERN "*/docs" EXCLUDE
+  PATTERN "*/glfw/examples" EXCLUDE
+  PATTERN "*/tests" EXCLUDE
+  PATTERN "*/test" EXCLUDE
+)
