@@ -2,11 +2,13 @@
 
 #include <cassert>
 
+struct GLFWwindow;
+
 namespace rat {
 
 	class Engine {
 	private:
-		Engine();
+		Engine(GLFWwindow* window);
 		~Engine();
 
 	public:
@@ -16,7 +18,7 @@ namespace rat {
 		Engine& operator=(Engine&&) = delete;
 
 	public:
-		static void initialize();
+		static void initialize(GLFWwindow* window);
 		static void terminate();
 		static Engine& getInstance() { return *s_engine; }
 

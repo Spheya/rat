@@ -8,9 +8,12 @@ namespace rat {
 
 	Engine* Engine::s_engine = nullptr;
 
-	void Engine::initialize() {
+	Engine::Engine(GLFWwindow* /*window*/) {}
+	Engine::~Engine() = default;
+
+	void Engine::initialize(GLFWwindow* window) {
 		assert(s_engine == nullptr);
-		s_engine = new Engine();
+		s_engine = new Engine(window);
 	}
 
 	void Engine::terminate() {

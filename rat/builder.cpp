@@ -42,6 +42,8 @@ static bool createCMakeLists(const std::filesystem::path& buildDir, std::span<co
 	outFile << "  add_executable(ratengine main.cpp)\n";
 	outFile << "endif()\n";
 	outFile << "\n";
+	outFile << "target_link_libraries(ratengine PRIVATE rat::core)\n";
+	outFile << "\n";
 	for(const auto& extension : extensions)
 		outFile << "add_subdirectory(" << std::filesystem::relative(extension, buildDir).generic_string() << " ${CMAKE_BINARY_DIR}/"
 		        << extension.filename().string() << ")\n";
@@ -76,10 +78,10 @@ static bool createEngineMain(const std::filesystem::path& buildDir, std::span<co
 	outFile << "\n";
 	for(const auto& extension : extensions) outFile << "void " << extension.filename().string() << "Init();\n";
 	outFile << "\n";
-	outFile << "extern \"C\" RAT_EXPORT int ratEngineMain(); \n";
+	outFile << "extern \"C\" RAT_EXPORT int ratEngineMain(GLFWwindow* window); \n";
 	outFile << "\n";
-	outFile << "extern \"C\" RAT_EXPORT int ratEngineMain() {\n";
-	outFile << "\trat::Engine::initialize();\n";
+	outFile << "extern \"C\" RAT_EXPORT int ratEngineMain(GLFWwindow* window) {\n";
+	outFile << "\trat::Engine::initialize(window);\n";
 	for(const auto& extension : extensions) outFile << "\t" << extension.filename().string() << "Init();\n";
 	outFile << "\trat::Engine::getInstance().run();\n";
 	outFile << "\trat::Engine::terminate();\n";
@@ -87,7 +89,7 @@ static bool createEngineMain(const std::filesystem::path& buildDir, std::span<co
 	outFile << "}\n";
 	outFile << "\n";
 	outFile << "#ifndef RAT_EDITOR\n";
-	outFile << "\tint main() { return ratEngineMain(); }\n";
+	outFile << "\tint main() { return ratEngineMain(nullptr); }\n";
 	outFile << "#endif\n";
 	return true;
 }
