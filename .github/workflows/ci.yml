@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libwayland-dev libxkbcommon-dev iwyu ninja
+          sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libwayland-dev libxkbcommon-dev iwyu ninja-build
       - name: Build project
         run: |
           cmake \
@@ -32,7 +32,7 @@ jobs:
             -DCMAKE_CXX_FLAGS="-Werror" \
             -DRAT_USE_IWYU=ON \
             -B build \
-            -G ninja
+            -G Ninja
           cmake --build build --parallel $(nproc)
       - uses: actions/upload-artifact@v7
         with:
