@@ -36,7 +36,7 @@ jobs:
 
           cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DRAT_CI=ON
           cmake --build build --target rat --parallel $(nproc)
-          echo "$GITHUB_WORKSPACE/build/rat" >> GITHUB_PATH
+          echo "$GITHUB_WORKSPACE/build/rat" >> $GITHUB_PATH
       - name: Build Samples
         shell: bash
         run: |
