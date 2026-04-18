@@ -1,0 +1,68 @@
+name: Linting
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  clang-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup clang-format
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget lsb-release software-properties-common gnupg
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 21
+          sudo apt-get install -y clang-format-21
+      - name: Run clang-format
+        run: |
+          result=0
+          for file in $(git ls-files '*.cpp' '*.h' '*.hpp' ':!engine/external/**'); do
+            if ! clang-format-21 --dry-run --Werror "$file"; then
+              result=1
+            fi
+          done
+          exit $result
+
+  clang-tidy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libwayland-dev libxkbcommon-dev
+      - name: CMake Configure
+        run: cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=On -DCMAKE_BUILD_TYPE=Debug
+      - uses: ZedThree/clang-tidy-review@v0.23.1
+        id: review
+        with:
+          build_dir: build
+          config_file: .clang-tidy
+          lgtm_comment_body: ''
+          exclude: 'engine/external/*,samples/*'
+      - uses: ZedThree/clang-tidy-review/upload@v0.23.1
+        id: upload-review
+      - if: steps.review.outputs.total_comments > 0
+        run: exit 1
+
+  include-what-you-use:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libwayland-dev libxkbcommon-dev iwyu
+      - name: Build
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Debug -DRAT_USE_IWYU=On
+          cmake --build build --parallel $(nproc)

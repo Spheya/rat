@@ -4,12 +4,23 @@ project(rat)
 include(CMakePackageConfigHelpers)
 include(cmake/ratlib.cmake)
 
+set(GLFW_LIBRARY_TYPE SHARED CACHE STRING "" FORCE)
+
 add_subdirectory(rat)
-add_subdirectory(editor)
+add_subdirectory(engine)
 
 install(
-  TARGETS rateditor rat
+  TARGETS rat
   EXPORT rat-targets
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+  FILE_SET HEADERS DESTINATION include
+)
+
+install(
+  TARGETS glfw
+  EXPORT rat-editor-targets
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -20,6 +31,12 @@ install(
   EXPORT rat-targets
   FILE rat.cmake
   NAMESPACE rat::
+  DESTINATION cmake
+)
+
+install(
+  EXPORT rat-editor-targets
+  FILE editor-deps.cmake
   DESTINATION cmake
 )
 
@@ -43,4 +60,22 @@ install(
   DESTINATION cmake
 )
 
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/engine/ DESTINATION src)
+install(
+  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/engine/
+  DESTINATION src
+  PATTERN "*/.github" EXCLUDE
+  PATTERN "*/doc" EXCLUDE
+  PATTERN "*/docs" EXCLUDE
+  PATTERN "*/glfw/examples" EXCLUDE
+  PATTERN "*/tests" EXCLUDE
+  PATTERN "*/test" EXCLUDE
+)
+
+# from GLFW's CMakeLists.txt
+install(
+  DIRECTORY include/GLFW
+  DESTINATION include
+  FILES_MATCHING
+    PATTERN glfw3.h
+    PATTERN glfw3native.h
+)

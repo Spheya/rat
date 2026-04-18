@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "command.hpp"
+#include "engine.hpp"
 #include "sharedlib.hpp"
 
 static bool createCMakeLists(const std::filesystem::path& buildDir, std::span<const std::filesystem::path> extensions) {
@@ -24,20 +25,29 @@ static bool createCMakeLists(const std::filesystem::path& buildDir, std::span<co
 	outFile << "\n";
 	outFile << "option(RAT_BUILD_EDITOR \"Build the project to be attached to the editor\" OFF)\n";
 	outFile << "\n";
-	outFile << "find_package(rat)\n";
-	outFile << "\n";
-	outFile << "if(RAT_BUILD_EDITOR)\n";
-	outFile << "  add_library(ratengine SHARED .rat/main.cpp)\n";
-	outFile << "  target_compile_definitions(ratengine PUBLIC RAT_EDITOR)\n";
-	outFile << "else()\n";
-	outFile << "  add_executable(ratengine .rat/main.cpp)\n";
+	outFile << "if(NOT TARGET rat::core)\n";
+	outFile << "\tfind_package(rat)\n";
 	outFile << "endif()\n";
 	outFile << "\n";
-	outFile << "add_custom_command(\n";
-	outFile << "  TARGET ratengine\n";
-	outFile << "  POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:ratengine> ${CMAKE_CURRENT_SOURCE_DIR}/.rat\n";
-	outFile << "  VERBATIM\n";
-	outFile << ")\n";
+	outFile << "if(RAT_BUILD_EDITOR)\n";
+	outFile << "  add_library(ratengine SHARED main.cpp)\n";
+	outFile << "  init_rat_target(ratengine)\n";
+	outFile << "  target_compile_definitions(ratengine PUBLIC RAT_EDITOR)\n";
+	outFile << "  set_target_properties(ratengine PROPERTIES\n";
+	outFile << "    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}\n";
+	outFile << "    RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_SOURCE_DIR}\n";
+	outFile << "    RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_SOURCE_DIR}\n";
+	outFile << "    RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_CURRENT_SOURCE_DIR}\n";
+	outFile << "    RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL ${CMAKE_CURRENT_SOURCE_DIR}\n";
+	outFile << "  )\n";
+	outFile << "  target_link_options(ratengine PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/PDB:$<TARGET_FILE_DIR:ratengine>/ratengine.pdb>) # Because MSVC "
+	           "is annoying\n";
+	outFile << "else()\n";
+	outFile << "  add_executable(ratengine main.cpp)\n";
+	outFile << "  init_rat_target(ratengine)\n";
+	outFile << "endif()\n";
+	outFile << "\n";
+	outFile << "target_link_libraries(ratengine PRIVATE rat::core)\n";
 	outFile << "\n";
 	for(const auto& extension : extensions)
 		outFile << "add_subdirectory(" << std::filesystem::relative(extension, buildDir).generic_string() << " ${CMAKE_BINARY_DIR}/"
@@ -55,6 +65,8 @@ static bool createEngineMain(const std::filesystem::path& buildDir, std::span<co
 	outFile << "// Any changes will be discarded               //\n";
 	outFile << "/////////////////////////////////////////////////\n";
 	outFile << "\n";
+	outFile << "#include <rat/core/engine.hpp>\n";
+	outFile << "\n";
 	outFile << "#ifdef RAT_EDITOR\n";
 	outFile << "\t#ifdef _WIN32\n";
 	outFile << "\t\t#define RAT_EXPORT __declspec(dllexport)\n";
@@ -71,25 +83,44 @@ static bool createEngineMain(const std::filesystem::path& buildDir, std::span<co
 	outFile << "\n";
 	for(const auto& extension : extensions) outFile << "void " << extension.filename().string() << "Init();\n";
 	outFile << "\n";
-	outFile << "extern \"C\" RAT_EXPORT int ratEngineMain() {\n";
+	outFile << "extern \"C\" RAT_EXPORT void ratEngineInit(rat::EditorContext* editorContext); \n";
+	outFile << "extern \"C\" RAT_EXPORT void ratEngineClose(); \n";
+	outFile << "extern \"C\" RAT_EXPORT void ratEngineTick(); \n";
+	outFile << "\n";
+	outFile << "extern \"C\" RAT_EXPORT void ratEngineInit(rat::EditorContext* editorContext) {\n";
+	outFile << "\trat::Engine::initialize(editorContext);\n";
 	for(const auto& extension : extensions) outFile << "\t" << extension.filename().string() << "Init();\n";
-	outFile << "\treturn 0;\n";
+	outFile << "}\n";
+	outFile << "\n";
+	outFile << "extern \"C\" RAT_EXPORT void ratEngineClose() {\n";
+	outFile << "\trat::Engine::terminate();\n";
+	outFile << "}\n";
+	outFile << "\n";
+	outFile << "extern \"C\" RAT_EXPORT void ratEngineTick() {\n";
+	outFile << "\trat::Engine::getInstance().tick();\n";
 	outFile << "}\n";
 	outFile << "\n";
 	outFile << "#ifndef RAT_EDITOR\n";
-	outFile << "\tint main() { return ratEngineMain(); }\n";
+	outFile << "int main() {\n";
+	outFile << "\tratEngineInit(nullptr);\n";
+	outFile << "\twhile(!rat::Engine::getInstance().isCloseRequested()) ratEngineTick();\n";
+	outFile << "\tratEngineClose();\n";
+	outFile << "\treturn 0;\n";
+	outFile << "}\n";
 	outFile << "#endif\n";
 	return true;
 }
 
 static std::vector<std::filesystem::path> loadExtensions(const std::filesystem::path& root) {
 	std::vector<std::filesystem::path> extensions;
-	for(const auto& entry : std::filesystem::directory_iterator(root / "extensions"))
-		if(entry.is_directory()) extensions.emplace_back(entry.path());
+	std::filesystem::path extensionsDir = root / "extensions";
+	if(std::filesystem::exists(extensionsDir))
+		for(const auto& entry : std::filesystem::directory_iterator(extensionsDir))
+			if(entry.is_directory()) extensions.emplace_back(entry.path());
 	return extensions;
 }
 
-bool linkEngine(const char* projectPath) {
+Engine linkEngine(const char* projectPath) {
 #ifdef _WIN32
 	const char* engineName = "ratengine.dll";
 #else
@@ -97,18 +128,12 @@ bool linkEngine(const char* projectPath) {
 #endif
 
 	std::filesystem::path projPath = std::filesystem::absolute(projectPath);
-	if(!projPath.has_parent_path()) return false;
+	if(!projPath.has_parent_path()) return Engine(nullptr);
 	std::filesystem::path root = projPath.parent_path();
 	std::filesystem::path enginePath = root / ".rat" / engineName;
 
 	SharedLib engine = OpenLibrary(enginePath);
-	if(!engine) return false;
-
-	auto main = GetSymbol<void()>(engine, "ratEngineMain");
-	if(!main) return false;
-	main();
-
-	return true;
+	return Engine(engine);
 }
 
 bool generateBuildFiles(const char* projectPath) {
@@ -118,7 +143,7 @@ bool generateBuildFiles(const char* projectPath) {
 	std::filesystem::path ratDir = root / ".rat";
 	std::vector<std::filesystem::path> extensions = loadExtensions(root);
 	std::filesystem::create_directories(ratDir);
-	if(!createCMakeLists(root, extensions)) return false;
+	if(!createCMakeLists(ratDir, extensions)) return false;
 	if(!createEngineMain(ratDir, extensions)) return false;
 	return true;
 }
@@ -130,13 +155,16 @@ bool buildEngine(const char* projectPath, bool editor) {
 	std::filesystem::path ratDir = root / ".rat";
 	std::filesystem::path buildDir = ratDir / (editor ? "build" : "export");
 
+	std::filesystem::path cmakeProjDir = ratDir;
+	if(std::filesystem::exists(root / "CMakeLists.txt")) cmakeProjDir = root;
+
 	runCommand(
 	    R"(cmake "{}" -B "{}" -G Ninja -DRAT_BUILD_EDITOR={} -DCMAKE_EXPORT_COMPILE_COMMANDS=ON)",
-	    root.generic_string(),
+	    cmakeProjDir.generic_string(),
 	    buildDir.generic_string(),
 	    editor ? "ON" : "OFF"
 	);
-	runCommand(R"(cmake --build "{}")", buildDir.generic_string());
+	runCommand(R"(cmake --build "{}" --target ratengine)", buildDir.generic_string());
 
 	return true;
 }

@@ -3,24 +3,36 @@ function(add_rat_extension name)
   target_link_libraries(ratengine PRIVATE ${name})
   target_link_libraries(${name} PRIVATE rat::core)
   if(RAT_BUILD_EDITOR)
-    target_link_libraries(${name} PRIVATE rat::editor)
     target_compile_definitions(${name} PRIVATE RAT_EDITOR)
   endif()
 endfunction()
 
 function(init_rat_target name)
+  if(MSVC)
+    target_compile_options(${name} PRIVATE /W4) # Clang warnings are our ground truth, but this might be able to catch some weird MSVC behaviour
+  endif()
+
   if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     target_compile_options(${name} PRIVATE
-      -Weverything
+      -Weverything # :)
+
+      # As of right now, Rat is C++20, I don't care about older versions
+      -Wno-c++98-c++11-c++14-c++17-compat
       -Wno-c++98-c++11-c++14-c++17-compat-pedantic
       -Wno-c++98-compat-pedantic
       -Wno-c++11-compat-pedantic
       -Wno-c++14-compat-pedantic
       -Wno-c++17-compat-pedantic
-      -Wno-c++20-compat-pedantic
+      -Wno-c++98-compat
+      -Wno-c++11-compat
+      -Wno-c++14-compat
+      -Wno-c++17-compat
       -Wno-c99-compat
+
       -Wno-unsafe-buffer-usage   # it's stupid
       -Wno-unused-macros         # seems to be incorrect sometimes?
+      -Wno-padded                # I don't really care about this
+
       -fdiagnostics-show-template-tree
       -fdiagnostics-show-option
       -fdiagnostics-show-category=name
@@ -28,7 +40,11 @@ function(init_rat_target name)
     )
   endif()
   if(RAT_USE_IWYU)
-    set_target_properties(${name} PROPERTIES CXX_INCLUDE_WHAT_YOU_USE "include-what-you-use;-Xiwyu;--error;-Xiwyu;--mapping_file=${CMAKE_SOURCE_DIR}/iwyu.imp")
+    set_property(TARGET ${name} PROPERTY CXX_INCLUDE_WHAT_YOU_USE "include-what-you-use;-Xiwyu;--error;-Xiwyu;--mapping_file=${CMAKE_SOURCE_DIR}/iwyu.imp")
   endif()  
-  target_compile_definitions(${name} PRIVATE $<$<CONFIG:Release>:NDEBUG>)
+  target_compile_definitions(${name} PRIVATE $<$<NOT:$<CONFIG:Debug>>:NDEBUG>)
+  set_property(TARGET ${name} PROPERTY CXX_STANDARD 20)
+  if(WIN32)
+    target_compile_definitions(${name} PRIVATE UNICODE)
+  endif()
 endfunction()
