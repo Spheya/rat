@@ -41,7 +41,7 @@ Checks: >
   -readability-uppercase-literal-suffix
 WarningsAsErrors: '*'
 FormatStyle: file
-SystemHeaders: true
+SystemHeaders: false
 HeaderFilterRegex: 'src/.*'
 CheckOptions:
   - key: misc-const-correctness.AnalyzeValues
