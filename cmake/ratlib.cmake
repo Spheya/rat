@@ -15,13 +15,9 @@ function(init_rat_target name)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     target_compile_options(${name} PRIVATE
       -Weverything
+      -Wno-c++98-c++11-c++14-c++17-compat
       -Wno-c++98-c++11-c++14-c++17-compat-pedantic
-      -Wno-c++98-compat-pedantic
-      -Wno-c++11-compat-pedantic
-      -Wno-c++14-compat-pedantic
-      -Wno-c++17-compat-pedantic
-      -Wno-c++20-compat-pedantic
-      -Wno-c98-compat
+      -Wno-c99-compat
       -Wno-unsafe-buffer-usage   # it's stupid
       -Wno-unused-macros         # seems to be incorrect sometimes?
       -Wno-padded                # I don't really care about this
