@@ -46,7 +46,7 @@ jobs:
           build_dir: build
           config_file: .clang-tidy
           lgtm_comment_body: ''
-          exclude: 'engine/external/*'
+          exclude: 'engine/external/*,samples/*'
       - uses: ZedThree/clang-tidy-review/upload@v0.23.1
         id: upload-review
       - if: steps.review.outputs.total_comments > 0

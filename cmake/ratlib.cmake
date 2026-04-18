@@ -21,7 +21,7 @@ function(init_rat_target name)
       -Wno-c++14-compat-pedantic
       -Wno-c++17-compat-pedantic
       -Wno-c++20-compat-pedantic
-      -Wno-c99-compat
+      -Wno-c98-compat
       -Wno-unsafe-buffer-usage   # it's stupid
       -Wno-unused-macros         # seems to be incorrect sometimes?
       -Wno-padded                # I don't really care about this
