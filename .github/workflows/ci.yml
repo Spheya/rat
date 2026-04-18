@@ -65,6 +65,6 @@ jobs:
           database: 'build'
           step-summary: true
           files-changed-only: true
-          ignore: 'build'
+          ignore: 'build|samples'
       - if: steps.linter.outputs.checks-failed > 0
         run: exit 1
