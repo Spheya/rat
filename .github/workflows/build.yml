@@ -6,8 +6,7 @@ on:
   pull_request:
 
 jobs:
-  rat:
-    name: Rat
+  build:
     runs-on: ${{ matrix.os }}
     
     strategy:
@@ -27,7 +26,7 @@ jobs:
       - uses: turtlesec-no/get-ninja@main
       - uses: ilammy/msvc-dev-cmd@v1
         if: runner.os == 'Windows'
-      - name: Build Project
+      - name: Build Rat
         shell: bash
         run: |
           if [[ "${{ runner.os }}" == "Linux" ]] ; then
@@ -35,12 +34,19 @@ jobs:
             export CXX=clang++
           fi
 
-          if [[ "${{ runner.os }}" == "Windows" ]]; then
-            COMPILE_FLAGS="/WX"
-          else
-            COMPILE_FLAGS="-Werror"
+          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DRAT_CI=ON
+          cmake --build build --target rat --parallel $(nproc)
+          echo "$GITHUB_WORKSPACE/build/rat" >> GITHUB_PATH
+      - name: Build Samples
+        shell: bash
+        run: |
+          if [[ "${{ runner.os }}" == "Linux" ]] ; then
+            export CC=clang
+            export CXX=clang++
           fi
 
-          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DCMAKE_CXX_FLAGS="$COMPILE_FLAGS"
-          cmake --build build --target rat --parallel $(nproc)
-
+          for sample in samples/*/; do
+            cd sample
+            cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DRAT_CI=ON
+            cmake --build build --target ratengine --parallel $(nproc)
+          done
