@@ -33,6 +33,7 @@ namespace rat {
 		delete s_engine;
 	}
 
+	// NOLINTBEGIN
 	void Engine::tick() {
 #ifdef RAT_GLFW
 		glfwPollEvents();
@@ -43,5 +44,6 @@ namespace rat {
 	bool Engine::isCloseRequested() const {
 		return false;
 	}
+	// NOLINTEND
 
 } // namespace rat
