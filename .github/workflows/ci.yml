@@ -67,6 +67,6 @@ jobs:
           files-changed-only: true
           ignore: 'build|samples'
       - name: test
-        run: clang-tidy engine/core/rat/core/engine.cpp -p build
+        run: clang-tidy engine/core/rat/core/engine.cpp -p build -v
       - if: steps.linter.outputs.checks-failed > 0
         run: exit 1
