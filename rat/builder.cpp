@@ -33,13 +33,15 @@ static bool createCMakeLists(const std::filesystem::path& buildDir, std::span<co
 	outFile << "  add_library(ratengine SHARED main.cpp)\n";
 	outFile << "  init_rat_target(ratengine)\n";
 	outFile << "  target_compile_definitions(ratengine PUBLIC RAT_EDITOR)\n";
-	outFile << "  add_custom_command(\n";
-	outFile << "    TARGET ratengine\n";
-	outFile << "    POST_BUILD\n";
-	outFile << "      COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:ratengine> ${CMAKE_CURRENT_SOURCE_DIR}\n";
-	outFile << "      COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_PDB_FILE:ratengine> ${CMAKE_CURRENT_SOURCE_DIR}\n";
-	outFile << "    VERBATIM\n";
+	outFile << "  set_target_properties(ratengine PROPERTIES\n";
+	outFile << "    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}\n";
+	outFile << "    RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_SOURCE_DIR}\n";
+	outFile << "    RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_SOURCE_DIR}\n";
+	outFile << "    RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_CURRENT_SOURCE_DIR}\n";
+	outFile << "    RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL ${CMAKE_CURRENT_SOURCE_DIR}\n";
 	outFile << "  )\n";
+	outFile << "  target_link_options(ratengine PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/PDB:$<TARGET_FILE_DIR:ratengine>/ratengine.pdb>) # Because MSVC "
+	           "is annoying\n";
 	outFile << "else()\n";
 	outFile << "  add_executable(ratengine main.cpp)\n";
 	outFile << "  init_rat_target(ratengine)\n";

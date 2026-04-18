@@ -5,7 +5,5 @@ project(sandbox)
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/ratlib.cmake)
 add_subdirectory(../../ rat)
 
-message("generating .rat folder")
 execute_process(COMMAND rat generate ${CMAKE_CURRENT_SOURCE_DIR}/sandbox.ratproject)
-message("finished generating .rat folder")
 add_subdirectory(.rat)
