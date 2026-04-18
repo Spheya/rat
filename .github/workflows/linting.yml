@@ -34,13 +34,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
+      - run: cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=On -DCMAKE_BUILD_TYPE=Debug
       - uses: ZedThree/clang-tidy-review@v0.23.1
         id: review
         with:
           build_dir: build
           config_file: .clang-tidy
           apt_packages: libxrandr-dev, libxinerama-dev, libxcursor-dev, libxi-dev, libxext-dev, libwayland-dev, libxkbcommon-dev
-          cmake_command: cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=On -DCMAKE_BUILD_TYPE=Debug
           lgtm_comment_body: ''
       - uses: ZedThree/clang-tidy-review/upload@v0.23.1
         id: upload-review
