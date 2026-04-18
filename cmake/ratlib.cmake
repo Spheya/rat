@@ -9,7 +9,7 @@ endfunction()
 
 function(init_rat_target name)
   if(MSVC)
-    target_compile_options(${name} PRIVATE /W4)
+    target_compile_options(${name} PRIVATE /W4) # Clang warnings are our ground truth, but this might be able to catch some weird MSVC behaviour
   endif()
 
   if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
