@@ -46,7 +46,7 @@ jobs:
           fi
 
           for sample in samples/*/; do
-            cd sample
+            cd $sample
             cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DRAT_CI=ON
             cmake --build build --target ratengine --parallel $(nproc)
           done
