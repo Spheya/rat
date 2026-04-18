@@ -7,7 +7,7 @@
 #include "builder.hpp"
 #include "engine.hpp"
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[]) { // NOLINT(readability-convert-member-functions-to-static)
 	if(argc == 2) {
 		glfwInit();
 
