@@ -3,4 +3,4 @@ project(myextension)
 
 add_rat_extension(myextension)
 target_compile_definitions(myextension PRIVATE MY_EXTENSION_EXPORT)
-target_sources(myextension PRIVATE main.cpp)
+target_sources(myextension PRIVATE myextension.cpp)
