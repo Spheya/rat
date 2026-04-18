@@ -5,7 +5,6 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
-#include "editorcontext.hpp"
 #include "logger.hpp"
 
 namespace rat {
@@ -16,7 +15,7 @@ namespace rat {
 #if defined(RAT_GLFW) && !defined(RAT_EDITOR)
 		glfwInit();
 #endif
-		m_graphicsContext = std::make_unique<opengl::GraphicsContext>(editorContext);
+		m_graphicsContext = std::make_unique<opengl::GraphicsContext>(editorContext); // NOLINT(cppcoreguidelines-prefer-member-initializer)
 	}
 
 	Engine::~Engine() {

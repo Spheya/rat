@@ -5,6 +5,7 @@
 #include <rat/core/editorcontext.hpp>
 
 #include "builder.hpp"
+#include "engine.hpp"
 
 int main(int argc, char* argv[]) {
 	if(argc == 2) {
