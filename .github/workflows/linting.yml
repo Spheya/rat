@@ -51,3 +51,18 @@ jobs:
         id: upload-review
       - if: steps.review.outputs.total_comments > 0
         run: exit 1
+
+  include-what-you-use:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libwayland-dev libxkbcommon-dev iwyu
+      - name: Build
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Debug -DRAT_USE_IWYU=On
+          cmake --build build --parallel $(nproc)
