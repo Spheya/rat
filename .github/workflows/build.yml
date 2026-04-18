@@ -34,7 +34,7 @@ jobs:
             export CXX=clang++
           fi
 
-          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DCMAKE_COMPILE_WARNING_AS_ERROR=On -DRAT_CI=ON
+          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DCMAKE_COMPILE_WARNING_AS_ERROR=On
           cmake --build build --target rat --parallel $(nproc)
           echo "$GITHUB_WORKSPACE/build/rat" >> $GITHUB_PATH
       - name: Build Samples
@@ -47,8 +47,8 @@ jobs:
 
           for sample in samples/*/; do
             cd $sample
-            cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DCMAKE_COMPILE_WARNING_AS_ERROR=On -DRAT_CI=On -DRAT_BUILD_EDITOR=On
+            cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DCMAKE_COMPILE_WARNING_AS_ERROR=On -DRAT_BUILD_EDITOR=On
             cmake --build build --target ratengine --parallel $(nproc)
-            cmake -B export -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DCMAKE_COMPILE_WARNING_AS_ERROR=On -DRAT_CI=On
+            cmake -B export -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DCMAKE_COMPILE_WARNING_AS_ERROR=On
             cmake --build export --target ratengine --parallel $(nproc)
           done
