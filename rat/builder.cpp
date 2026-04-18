@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "command.hpp"
+#include "engine.hpp"
 #include "sharedlib.hpp"
 
 static bool createCMakeLists(const std::filesystem::path& buildDir, std::span<const std::filesystem::path> extensions) {
@@ -30,6 +31,7 @@ static bool createCMakeLists(const std::filesystem::path& buildDir, std::span<co
 	outFile << "\n";
 	outFile << "if(RAT_BUILD_EDITOR)\n";
 	outFile << "  add_library(ratengine SHARED main.cpp)\n";
+	outFile << "  init_rat_target(ratengine)\n";
 	outFile << "  target_compile_definitions(ratengine PUBLIC RAT_EDITOR)\n";
 	outFile << "  add_custom_command(\n";
 	outFile << "    TARGET ratengine\n";
@@ -60,7 +62,7 @@ static bool createEngineMain(const std::filesystem::path& buildDir, std::span<co
 	outFile << "// Any changes will be discarded               //\n";
 	outFile << "/////////////////////////////////////////////////\n";
 	outFile << "\n";
-	outFile << "#include <rat/engine.hpp>\n";
+	outFile << "#include <rat/core/engine.hpp>\n";
 	outFile << "\n";
 	outFile << "#ifdef RAT_EDITOR\n";
 	outFile << "\t#ifdef _WIN32\n";
@@ -78,18 +80,30 @@ static bool createEngineMain(const std::filesystem::path& buildDir, std::span<co
 	outFile << "\n";
 	for(const auto& extension : extensions) outFile << "void " << extension.filename().string() << "Init();\n";
 	outFile << "\n";
-	outFile << "extern \"C\" RAT_EXPORT int ratEngineMain(GLFWwindow* window); \n";
+	outFile << "extern \"C\" RAT_EXPORT void ratEngineInit(rat::EditorContext* editorContext); \n";
+	outFile << "extern \"C\" RAT_EXPORT void ratEngineClose(); \n";
+	outFile << "extern \"C\" RAT_EXPORT void ratEngineTick(); \n";
 	outFile << "\n";
-	outFile << "extern \"C\" RAT_EXPORT int ratEngineMain(GLFWwindow* window) {\n";
-	outFile << "\trat::Engine::initialize(window);\n";
+	outFile << "extern \"C\" RAT_EXPORT void ratEngineInit(rat::EditorContext* editorContext) {\n";
+	outFile << "\trat::Engine::initialize(editorContext);\n";
 	for(const auto& extension : extensions) outFile << "\t" << extension.filename().string() << "Init();\n";
-	outFile << "\trat::Engine::getInstance().run();\n";
+	outFile << "}\n";
+	outFile << "\n";
+	outFile << "extern \"C\" RAT_EXPORT void ratEngineClose() {\n";
 	outFile << "\trat::Engine::terminate();\n";
-	outFile << "\treturn 0;\n";
+	outFile << "}\n";
+	outFile << "\n";
+	outFile << "extern \"C\" RAT_EXPORT void ratEngineTick() {\n";
+	outFile << "\trat::Engine::getInstance().tick();\n";
 	outFile << "}\n";
 	outFile << "\n";
 	outFile << "#ifndef RAT_EDITOR\n";
-	outFile << "\tint main() { return ratEngineMain(nullptr); }\n";
+	outFile << "int main() {\n";
+	outFile << "\tratEngineInit(nullptr);\n";
+	outFile << "\twhile(!rat::Engine::getInstance().isCloseRequested()) ratEngineTick();\n";
+	outFile << "\tratEngineClose();\n";
+	outFile << "\treturn 0;\n";
+	outFile << "}\n";
 	outFile << "#endif\n";
 	return true;
 }
@@ -103,7 +117,7 @@ static std::vector<std::filesystem::path> loadExtensions(const std::filesystem::
 	return extensions;
 }
 
-bool linkEngine(const char* projectPath) {
+Engine linkEngine(const char* projectPath) {
 #ifdef _WIN32
 	const char* engineName = "ratengine.dll";
 #else
@@ -111,18 +125,12 @@ bool linkEngine(const char* projectPath) {
 #endif
 
 	std::filesystem::path projPath = std::filesystem::absolute(projectPath);
-	if(!projPath.has_parent_path()) return false;
+	if(!projPath.has_parent_path()) return Engine(nullptr);
 	std::filesystem::path root = projPath.parent_path();
 	std::filesystem::path enginePath = root / ".rat" / engineName;
 
 	SharedLib engine = OpenLibrary(enginePath);
-	if(!engine) return false;
-
-	auto main = GetSymbol<void()>(engine, "ratEngineMain");
-	if(!main) return false;
-	main();
-
-	return true;
+	return Engine(engine);
 }
 
 bool generateBuildFiles(const char* projectPath) {
