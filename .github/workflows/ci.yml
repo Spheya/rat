@@ -61,8 +61,8 @@ jobs:
         with:
           style: 'file'
           tidy-checks: ''
-          version: '19'
-          database: ''
+          version: '21'
+          database: 'build'
           step-summary: true
           files-changed-only: true
           ignore: 'build|samples'
