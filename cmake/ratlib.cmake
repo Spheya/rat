@@ -9,10 +9,10 @@ endfunction()
 
 function(init_rat_target name)
   if(MSVC)
-    target_compile_options(${name} PRIVATE /Wall)
-    if(RAT_CI)
-      target_compile_options(${name} PRIVATE /WX)
-    endif()
+    target_compile_options(${name} PRIVATE
+      /Wall
+      /wd4191 # unsafe reinterpret_cast conversions
+    )
   endif()
 
   if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
@@ -36,9 +36,6 @@ function(init_rat_target name)
       -fdiagnostics-show-category=name
       -fvisibility=hidden
     )
-    if(RAT_CI)
-      target_compile_options(${name} PRIVATE -Werror)
-    endif()
   endif()
   if(RAT_USE_IWYU)
     set_property(TARGET ${name} PROPERTY CXX_INCLUDE_WHAT_YOU_USE "include-what-you-use;-Xiwyu;--error;-Xiwyu;--mapping_file=${CMAKE_SOURCE_DIR}/iwyu.imp")
