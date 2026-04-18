@@ -1,0 +1,54 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+        build-type: [Debug, Release]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+      - name: Install Dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt update
+          sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libwayland-dev libxkbcommon-dev
+      - uses: turtlesec-no/get-ninja@main
+      - uses: ilammy/msvc-dev-cmd@v1
+        if: runner.os == 'Windows'
+      - name: Build Rat
+        shell: bash
+        run: |
+          if [[ "${{ runner.os }}" == "Linux" ]] ; then
+            export CC=clang
+            export CXX=clang++
+          fi
+
+          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DCMAKE_COMPILE_WARNING_AS_ERROR=On
+          cmake --build build --target rat --parallel $(nproc)
+          echo "$GITHUB_WORKSPACE/build/rat" >> $GITHUB_PATH
+      - name: Build Samples
+        shell: bash
+        run: |
+          if [[ "${{ runner.os }}" == "Linux" ]] ; then
+            export CC=clang
+            export CXX=clang++
+          fi
+
+          for sample in samples/*/; do
+            cd $sample
+            cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DCMAKE_COMPILE_WARNING_AS_ERROR=On -DRAT_BUILD_EDITOR=On
+            cmake --build build --target ratengine --parallel $(nproc)
+            cmake -B export -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DCMAKE_COMPILE_WARNING_AS_ERROR=On
+            cmake --build export --target ratengine --parallel $(nproc)
+          done
