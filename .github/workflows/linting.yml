@@ -32,10 +32,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=On
-      - uses: ZedThree/clang-tidy-review@v0.22.0
+      - run: cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=On -DCMAKE_BUILD_TYPE=Debug
+      - uses: ZedThree/clang-tidy-review@v0.23.1
         id: review
-      - uses: ZedThree/clang-tidy-review/upload@v0.22.0
+      - uses: ZedThree/clang-tidy-review/upload@v0.23.1
         id: upload-review
       - if: steps.review.outputs.total_comments > 0
         run: exit 1
