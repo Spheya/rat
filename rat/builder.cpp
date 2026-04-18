@@ -42,6 +42,7 @@ static bool createCMakeLists(const std::filesystem::path& buildDir, std::span<co
 	outFile << "  )\n";
 	outFile << "else()\n";
 	outFile << "  add_executable(ratengine main.cpp)\n";
+	outFile << "  init_rat_target(ratengine)\n";
 	outFile << "endif()\n";
 	outFile << "\n";
 	outFile << "target_link_libraries(ratengine PRIVATE rat::core)\n";
