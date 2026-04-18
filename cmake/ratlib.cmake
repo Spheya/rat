@@ -9,10 +9,7 @@ endfunction()
 
 function(init_rat_target name)
   if(MSVC)
-    target_compile_options(${name} PRIVATE
-      /Wall
-      /wd4191 # unsafe reinterpret_cast conversions
-    )
+    target_compile_options(${name} PRIVATE /W4)
   endif()
 
   if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
