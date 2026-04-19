@@ -17,7 +17,11 @@ namespace rat::opengl {
 		GraphicsContext& operator=(GraphicsContext&) = delete;
 		GraphicsContext(GraphicsContext&&) = delete;
 		GraphicsContext& operator=(GraphicsContext&&) = delete;
-		~GraphicsContext();
+		~GraphicsContext() override;
+
+	public:
+		Mesh* createMesh(std::span<const Vertex> vertices, std::span<const uint32_t> indices) override;
+		void destroyMesh(Mesh* mesh) override;
 
 	private:
 		GLFWwindow* m_window;

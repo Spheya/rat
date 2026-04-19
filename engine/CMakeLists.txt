@@ -4,4 +4,5 @@ if(NOT TARGET glfw)
 endif()
 
 add_subdirectory(external/glm EXCLUDE_FROM_ALL SYSTEM)
+add_subdirectory(external/glad EXCLUDE_FROM_ALL SYSTEM)
 add_subdirectory(core)

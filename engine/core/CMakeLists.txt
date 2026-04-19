@@ -3,7 +3,7 @@ add_library(rat::core ALIAS ratcore)
 set_target_properties(ratcore PROPERTIES EXPORT_NAME core)
 init_rat_target(ratcore)
 
-target_link_libraries(ratcore PUBLIC glm PRIVATE glfw)
+target_link_libraries(ratcore PUBLIC glm glad PRIVATE glfw)
 
 target_sources(ratcore
   PUBLIC 
@@ -24,7 +24,6 @@ target_sources(ratcore
     rat/platform/opengl/opengl_graphics_context.cpp
 )
 target_include_directories(ratcore PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-
 
 if(RAT_BUILD_TYPE STREQUAL "Editor")
   set_target_properties(ratcore PROPERTIES POSITION_INDEPENDENT_CODE ON)
