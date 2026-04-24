@@ -2,7 +2,7 @@
 
 #include <span>
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 
 #include "rat/rendering/graphics_fwd.hpp"
 #include "rat/rendering/interface/mesh.hpp"

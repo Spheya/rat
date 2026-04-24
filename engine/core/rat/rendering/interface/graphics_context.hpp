@@ -2,6 +2,7 @@
 
 #include <span>
 
+#include "rat/rendering/drawable.hpp"
 #include "rat/rendering/graphics_fwd.hpp"
 
 namespace rat {
@@ -18,6 +19,10 @@ namespace rat {
 		virtual ~BaseGraphicsContext() = default;
 
 	public:
+		virtual void beginFrame() = 0;
+		virtual void endFrame() = 0;
+		virtual void draw(std::span<const Drawable> drawables) = 0;
+
 		virtual Mesh* createMesh(std::span<const Vertex> vertices, std::span<const uint32_t> indices) = 0;
 		virtual void destroyMesh(Mesh* mesh) = 0;
 	};

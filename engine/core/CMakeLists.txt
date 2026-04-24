@@ -15,13 +15,19 @@ target_sources(ratcore
       rat/core/logger.hpp
       rat/core/time.hpp
       rat/platform/opengl/opengl_graphics_context.hpp
+      rat/platform/opengl/opengl_mesh.hpp
       rat/rendering/interface/graphics_context.hpp
+      rat/rendering/interface/mesh.hpp
+      rat/rendering/drawable.hpp
+      rat/rendering/graphics_fwd.hpp
       rat/rendering/graphics.hpp
       rat/rendering/render_target.hpp
+      rat/rendering/vertex.hpp
   PRIVATE
     rat/core/logger.cpp
     rat/core/engine.cpp
     rat/platform/opengl/opengl_graphics_context.cpp
+    rat/platform/opengl/opengl_mesh.cpp
 )
 target_include_directories(ratcore PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 

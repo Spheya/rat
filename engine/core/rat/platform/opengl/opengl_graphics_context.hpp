@@ -20,6 +20,10 @@ namespace rat::opengl {
 		~GraphicsContext() override;
 
 	public:
+		void beginFrame() override;
+		void endFrame() override;
+		void draw(std::span<const Drawable> drawables) override;
+
 		Mesh* createMesh(std::span<const Vertex> vertices, std::span<const uint32_t> indices) override;
 		void destroyMesh(Mesh* mesh) override;
 

@@ -36,6 +36,8 @@ namespace rat {
 	private:
 		EditorContext* m_editorContext;
 		std::unique_ptr<GraphicsContext> m_graphicsContext;
+
+		Mesh* tri;
 	};
 
 } // namespace rat
