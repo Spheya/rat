@@ -58,7 +58,7 @@ jobs:
         submodules: 'recursive'
     - uses: actions/download-artifact@v8
       with:
-        name: build-linux-${{ matrix.preset }}
+        name: ${{ matrix.os }}_${{ matrix.preset }}
         path: build/
     - name: Install Dependencies
       if: runner.os == 'Linux'
@@ -80,5 +80,3 @@ jobs:
           cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DRAT_BUILD_TYPE=${{ matrix.rat-build-type }} -DCMAKE_COMPILE_WARNING_AS_ERROR=On
           cmake --build build --target ratengine --parallel $(nproc)
         done
-
-    
