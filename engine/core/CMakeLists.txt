@@ -17,6 +17,7 @@ target_sources(ratcore
       rat/core/editorcontext.hpp
       rat/core/engine.hpp
       rat/core/logger.hpp
+      rat/core/time.hpp
       rat/platform/opengl/opengl_graphics_context.hpp
       rat/rendering/interface/graphics_context.hpp
       rat/rendering/graphics.hpp
