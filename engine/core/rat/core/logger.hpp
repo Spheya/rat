@@ -1,6 +1,8 @@
 #pragma once
 
-#include <format>
+// Export this because otherwise you need to include it everytime you want to log something
+// Todo: maybe also be able to log const char* ? That would allow removal of this export
+#include <format> // IWYU pragma : export
 
 namespace rat {
 	enum class LogLevel { Log, Info, Warn, Error };
