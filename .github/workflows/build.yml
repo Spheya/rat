@@ -43,8 +43,9 @@ jobs:
           retention-days: 1
 
   samples:
+    needs: engine
     runs-on: ${{ matrix.os }}
-    
+
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest]
