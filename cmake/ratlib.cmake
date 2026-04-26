@@ -1,10 +1,7 @@
 function(add_rat_extension name)
   add_library(${name} STATIC)
   target_link_libraries(ratengine PRIVATE ${name})
-  target_link_libraries(${name} PRIVATE rat::core)
-  if(RAT_BUILD_EDITOR)
-    target_compile_definitions(${name} PRIVATE RAT_EDITOR)
-  endif()
+  target_link_libraries(${name} PUBLIC rat::core)
 endfunction()
 
 function(init_rat_target name)

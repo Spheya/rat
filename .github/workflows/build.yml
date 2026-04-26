@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  build:
+  engine:
     runs-on: ${{ matrix.os }}
     
     strategy:
@@ -36,19 +36,48 @@ jobs:
 
           cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DCMAKE_COMPILE_WARNING_AS_ERROR=On
           cmake --build build --target rat --parallel $(nproc)
-          echo "$GITHUB_WORKSPACE/build/rat" >> $GITHUB_PATH
-      - name: Build Samples
-        shell: bash
-        run: |
-          if [[ "${{ runner.os }}" == "Linux" ]] ; then
-            export CC=clang
-            export CXX=clang++
-          fi
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.os }}_${{ matrix.preset }}
+          path: build/
+          retention-days: 1
 
-          for sample in samples/*/; do
-            cd $sample
-            cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DCMAKE_COMPILE_WARNING_AS_ERROR=On -DRAT_BUILD_EDITOR=On
-            cmake --build build --target ratengine --parallel $(nproc)
-            cmake -B export -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DCMAKE_COMPILE_WARNING_AS_ERROR=On
-            cmake --build export --target ratengine --parallel $(nproc)
-          done
+  samples:
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+        rat-build-type: [Editor, Development, Release]
+        build-type: [Debug, Release]
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: 'recursive'
+    - uses: actions/download-artifact@v8
+      with:
+        name: build-linux-${{ matrix.preset }}
+        path: build/
+    - name: Install Dependencies
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt update
+        sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libwayland-dev libxkbcommon-dev
+    - name: Build Samples
+      shell: bash
+      run: |
+        echo "$GITHUB_WORKSPACE/build/rat" >> $GITHUB_PATH
+
+        if [[ "${{ runner.os }}" == "Linux" ]] ; then
+          export CC=clang
+          export CXX=clang++
+        fi
+
+        for sample in samples/*/; do
+          cd $sample
+          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DRAT_BUILD_TYPE=${{ matrix.rat-build-type }} -DCMAKE_COMPILE_WARNING_AS_ERROR=On
+          cmake --build build --target ratengine --parallel $(nproc)
+        done
+
+    

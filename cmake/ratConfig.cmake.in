@@ -3,7 +3,7 @@
 include(${CMAKE_CURRENT_LIST_DIR}/ratlib.cmake)
 
 include(${CMAKE_CURRENT_LIST_DIR}/rat.cmake)
-if(RAT_BUILD_EDITOR)
+if(RAT_EDITOR)
   include(${CMAKE_CURRENT_LIST_DIR}/editor-deps.cmake)
 endif()
 
