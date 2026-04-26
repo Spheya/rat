@@ -38,7 +38,7 @@ jobs:
           cmake --build build --target rat --parallel $(nproc)
       - uses: actions/upload-artifact@v7
         with:
-          name: ${{ matrix.os }}_${{ matrix.preset }}
+          name: ${{ matrix.os }}_${{ matrix.build-type }}
           path: build/
           retention-days: 1
 
@@ -58,7 +58,7 @@ jobs:
         submodules: 'recursive'
     - uses: actions/download-artifact@v8
       with:
-        name: ${{ matrix.os }}_${{ matrix.preset }}
+        name: ${{ matrix.os }}_Release
         path: build/
     - name: Install Dependencies
       if: runner.os == 'Linux'
@@ -77,6 +77,8 @@ jobs:
 
         for sample in samples/*/; do
           cd $sample
+          rat generate sandbox.ratproject
+
           cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DRAT_BUILD_TYPE=${{ matrix.rat-build-type }} -DCMAKE_COMPILE_WARNING_AS_ERROR=On
           cmake --build build --target ratengine --parallel $(nproc)
         done
