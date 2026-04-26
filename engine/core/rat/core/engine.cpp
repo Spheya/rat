@@ -38,7 +38,9 @@ namespace rat {
 #ifdef RAT_GLFW
 		glfwPollEvents();
 #endif
-		logMessage("running the engine!");
+		rat::log("running the engine!");
+		rat::warn("running the engine!");
+		rat::error("running the engine!");
 	}
 
 	bool Engine::isCloseRequested() const {

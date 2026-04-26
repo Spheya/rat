@@ -37,7 +37,7 @@ jobs:
           sudo apt update
           sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libwayland-dev libxkbcommon-dev
       - name: CMake Configure
-        run: cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=On -DCMAKE_BUILD_TYPE=Debug
+        run: cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=On -DCMAKE_BUILD_TYPE=Debug -DRAT_BUILD_TYPE=Editor
       - uses: ZedThree/clang-tidy-review@v0.23.1
         id: review
         with:

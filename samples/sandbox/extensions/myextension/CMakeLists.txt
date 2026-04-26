@@ -4,3 +4,5 @@ project(myextension)
 add_rat_extension(myextension)
 target_compile_definitions(myextension PRIVATE MY_EXTENSION_EXPORT)
 target_sources(myextension PRIVATE myextension.cpp)
+
+set_property(TARGET myextension PROPERTY CXX_STANDARD 20)

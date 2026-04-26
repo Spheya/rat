@@ -29,6 +29,7 @@ function(init_rat_target name)
       -Wno-unsafe-buffer-usage   # it's stupid
       -Wno-unused-macros         # seems to be incorrect sometimes?
       -Wno-padded                # I don't really care about this
+      -Wno-switch-enum           # implicit handling is fine imo
 
       -fdiagnostics-show-template-tree
       -fdiagnostics-show-option
