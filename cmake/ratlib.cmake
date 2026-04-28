@@ -1,9 +1,9 @@
 function(add_rat_extension name)
   add_library(${name} STATIC)
   target_link_libraries(ratengine PRIVATE ${name})
-  target_link_libraries(${name} PRIVATE rat::core)
-  if(RAT_BUILD_EDITOR)
-    target_compile_definitions(${name} PRIVATE RAT_EDITOR)
+  target_link_libraries(${name} PUBLIC rat::core)
+  if(RAT_BUILD_TYPE STREQUAL "Editor")
+    set_target_properties(${name} PROPERTIES POSITION_INDEPENDENT_CODE ON)
   endif()
 endfunction()
 
@@ -32,6 +32,7 @@ function(init_rat_target name)
       -Wno-unsafe-buffer-usage   # it's stupid
       -Wno-unused-macros         # seems to be incorrect sometimes?
       -Wno-padded                # I don't really care about this
+      -Wno-switch-enum           # implicit handling is fine imo
 
       -fdiagnostics-show-template-tree
       -fdiagnostics-show-option

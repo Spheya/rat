@@ -23,13 +23,18 @@ static bool createCMakeLists(const std::filesystem::path& buildDir, std::span<co
 	outFile << "cmake_minimum_required(VERSION 3.25)\n";
 	outFile << "project(ratengine)\n";
 	outFile << "\n";
-	outFile << "option(RAT_BUILD_EDITOR \"Build the project to be attached to the editor\" OFF)\n";
+	outFile << "set(RAT_BUILD_TYPE \"Release\" CACHE STRING \"Either Editor, Development, or Release\")\n";
+	outFile << "set_property(CACHE RAT_BUILD_TYPE PROPERTY STRINGS \"Editor\" \"Development\" \"Release\")\n";
 	outFile << "\n";
-	outFile << "if(NOT TARGET rat::core)\n";
-	outFile << "\tfind_package(rat)\n";
+	outFile << "if(NOT RAT_BUILD_TYPE MATCHES \"^(Editor|Development|Release)$\")\n";
+	outFile << "  message(FATAL_ERROR \"RAT_BUILD_TYPE must be either Editor, Development, or Release\")\n";
 	outFile << "endif()\n";
 	outFile << "\n";
-	outFile << "if(RAT_BUILD_EDITOR)\n";
+	outFile << "if(NOT TARGET rat::core)\n";
+	outFile << "  find_package(rat)\n";
+	outFile << "endif()\n";
+	outFile << "\n";
+	outFile << "if(RAT_BUILD_TYPE STREQUAL \"Editor\")\n";
 	outFile << "  add_library(ratengine SHARED main.cpp)\n";
 	outFile << "  init_rat_target(ratengine)\n";
 	outFile << "  target_compile_definitions(ratengine PUBLIC RAT_EDITOR)\n";
@@ -159,7 +164,7 @@ bool buildEngine(const char* projectPath, bool editor) {
 	if(std::filesystem::exists(root / "CMakeLists.txt")) cmakeProjDir = root;
 
 	runCommand(
-	    R"(cmake "{}" -B "{}" -G Ninja -DRAT_BUILD_EDITOR={} -DCMAKE_EXPORT_COMPILE_COMMANDS=ON)",
+	    R"(cmake "{}" -B "{}" -G Ninja -DRAT_BUILD_TYPE=Editor -DCMAKE_EXPORT_COMPILE_COMMANDS=ON)",
 	    cmakeProjDir.generic_string(),
 	    buildDir.generic_string(),
 	    editor ? "ON" : "OFF"

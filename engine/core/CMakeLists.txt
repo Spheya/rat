@@ -3,10 +3,6 @@ add_library(rat::core ALIAS ratcore)
 set_target_properties(ratcore PROPERTIES EXPORT_NAME core)
 init_rat_target(ratcore)
 
-if(RAT_BUILD_EDITOR)
-  target_compile_definitions(ratcore PRIVATE RAT_EDITOR)
-endif()
-
 target_link_libraries(ratcore PUBLIC glm PRIVATE glfw)
 
 target_sources(ratcore
@@ -29,5 +25,14 @@ target_sources(ratcore
 )
 target_include_directories(ratcore PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
+
+if(RAT_BUILD_TYPE STREQUAL "Editor")
+  set_target_properties(ratcore PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  target_compile_definitions(ratcore PUBLIC RAT_EDITOR RAT_DEV_TOOLS)
+endif()
+if(RAT_BUILD_TYPE STREQUAL "Development")
+  target_compile_definitions(ratcore PUBLIC RAT_DEV_BUILD RAT_DEV_TOOLS)
+endif()
+
 target_compile_definitions(ratcore PRIVATE RAT_GLFW)
-target_compile_definitions(ratcore PRIVATE RAT_OPENGL)
+target_compile_definitions(ratcore PUBLIC RAT_OPENGL)
