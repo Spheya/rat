@@ -77,6 +77,7 @@ jobs:
 
         for sample in samples/*/; do
           cd $sample
+          rat generate sandbox.ratproject
           cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DRAT_BUILD_TYPE=${{ matrix.rat-build-type }} -DCMAKE_COMPILE_WARNING_AS_ERROR=On
           cmake --build build --target ratengine --parallel $(nproc)
         done
