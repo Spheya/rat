@@ -6,7 +6,7 @@ namespace rat {
 
 	class BaseMesh {
 	public:
-		BaseMesh(uint32_t numVertices, uint32_t numIndices) : m_numVertices(numVertices), m_numIndices(numIndices) {}
+		BaseMesh(uint32_t numVertices, uint32_t numIndices) : numVertices(numVertices), numIndices(numIndices) {}
 		BaseMesh(BaseMesh&) = delete;
 		BaseMesh& operator=(BaseMesh&) = delete;
 		BaseMesh(BaseMesh&&) noexcept = delete;
@@ -14,12 +14,12 @@ namespace rat {
 		virtual ~BaseMesh() = default;
 
 	public:
-		[[nodiscard]] uint32_t getVertexCount() const { return m_numVertices; }
-		[[nodiscard]] uint32_t getIndexCount() const { return m_numIndices; }
+		[[nodiscard]] uint32_t getVertexCount() const { return numVertices; }
+		[[nodiscard]] uint32_t getIndexCount() const { return numIndices; }
 
-	private:
-		uint32_t m_numVertices;
-		uint32_t m_numIndices;
+	protected:
+		uint32_t numVertices;
+		uint32_t numIndices;
 	};
 
 } // namespace rat

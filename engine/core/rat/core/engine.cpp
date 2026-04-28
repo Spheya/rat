@@ -10,8 +10,6 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
-#include "logger.hpp"
-
 namespace rat {
 
 	Engine* Engine::s_engine = nullptr;

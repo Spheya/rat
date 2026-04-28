@@ -29,10 +29,11 @@ function(init_rat_target name)
       -Wno-c++17-compat
       -Wno-c99-compat
 
-      -Wno-unsafe-buffer-usage   # it's stupid
-      -Wno-unused-macros         # seems to be incorrect sometimes?
-      -Wno-padded                # I don't really care about this
-      -Wno-switch-enum           # implicit handling is fine imo
+      -Wno-unsafe-buffer-usage          # it's stupid
+      -Wno-unused-macros                # seems to be incorrect sometimes?
+      -Wno-padded                       # I don't really care about this
+      -Wno-switch-enum                  # implicit handling is fine imo
+      -Wno-shadow-field-in-constructor  # I like doing this
 
       -fdiagnostics-show-template-tree
       -fdiagnostics-show-option
