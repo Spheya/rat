@@ -60,6 +60,9 @@ jobs:
       with:
         name: ${{ matrix.os }}_Release
         path: build/
+    - name: Restore Executable Permissions
+      if: runner.os == 'Linux'
+      run: chmod +x build/rat/rat
     - name: Install Dependencies
       if: runner.os == 'Linux'
       run: |
