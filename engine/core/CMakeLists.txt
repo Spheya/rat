@@ -26,6 +26,7 @@ target_include_directories(ratcore PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 
 if(RAT_BUILD_TYPE STREQUAL "Editor")
+  set_target_properties(ratcore PROPERTIES POSITION_INDEPENDENT_CODE ON)
   target_compile_definitions(ratcore PUBLIC RAT_EDITOR RAT_DEV_TOOLS)
 endif()
 if(RAT_BUILD_TYPE STREQUAL "Development")
