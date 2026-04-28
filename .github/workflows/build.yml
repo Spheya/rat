@@ -69,7 +69,8 @@ jobs:
         sudo apt update
         sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libwayland-dev libxkbcommon-dev
     - name: Add build folder to PATH
-      run: echo "${{ github.workspace }}/build/rat/" >> $GITHUB_PATH
+      shell: bash
+      run: echo "${{ github.workspace }}/build/rat >> $GITHUB_PATH
     - name: Build Samples
       shell: bash
       run: |
